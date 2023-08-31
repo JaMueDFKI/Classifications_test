@@ -7,6 +7,7 @@ from keras import Sequential
 from keras.layers import Conv1D, Flatten, Dense
 from numpy.lib.stride_tricks import sliding_window_view
 
+WINDOW_SIZE = 99
 
 def load_csv_from_folder(folder, index=None, axis=0):
     script_dir = os.path.dirname(__file__) # <-- absolute dir the script is in
@@ -28,10 +29,9 @@ def load_csv_from_folder(folder, index=None, axis=0):
     return pd.concat(li, axis=axis, ignore_index=False)
 
 
-def create_model(self):
-
+def create_model():
     model = Sequential()#add model layers
-    model.add(Conv1D(30, kernel_size=10, activation="relu", strides=1, input_shape=(self.WINDOW_SIZE, 1)))
+    model.add(Conv1D(30, kernel_size=10, activation="relu", strides=1, input_shape=(WINDOW_SIZE, 1)))
     model.add(Conv1D(30, kernel_size=8, activation="relu", strides=1))
     model.add(Conv1D(40, kernel_size=6, activation="relu", strides=1))
     #model.add(Dropout(0.1))
@@ -46,7 +46,7 @@ def create_model(self):
     return model
 
 
-def create_dataset(self, dataset_X, dataset_Y, window_size=599):
+def create_dataset(dataset_X, dataset_Y, window_size=99):
     gap = int((window_size-1)/2)
     dataX, dataY = [], []
     # for i in range(len(dataset_X)-window_size-1):
