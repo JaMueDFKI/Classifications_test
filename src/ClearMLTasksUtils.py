@@ -43,3 +43,7 @@ def start_task():
     dataset.upload(chunk_size=100)
     dataset.finalize()
     print("DataBases uploaded.")
+
+
+if __name__ == '__main__':
+    start_task()
