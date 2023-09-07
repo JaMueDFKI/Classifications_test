@@ -1,6 +1,7 @@
 import clearml
 from clearml import Dataset, Task
-from tensorflow.keras.metrics import Recall, Precision
+import tensorflow as tf
+from tf.keras.metrics import Recall, Precision
 
 from BinaryClassificationUtils import load_csv_from_folder, create_dataset
 
@@ -25,7 +26,7 @@ def start_task():
     models = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='Models')
     models_path = models.get_mutable_local_copy("Models/", True)
 
-    model = keras.models.load_model(models_path + "\\BinaryClassificationModel")
+    model = tf.keras.models.load_model(models_path + "\\BinaryClassificationModel")
 
     dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
     dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()

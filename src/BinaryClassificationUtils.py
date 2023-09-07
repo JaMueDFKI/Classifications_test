@@ -3,8 +3,9 @@ import os
 
 import numpy as np
 import pandas as pd
-from keras import Sequential
-from keras.layers import Conv1D, Flatten, Dense
+import tensorflow as tf
+from tf.keras import Sequential
+from tf.keras.layers import Conv1D, Flatten, Dense
 from numpy.lib.stride_tricks import sliding_window_view
 
 WINDOW_SIZE = 99
