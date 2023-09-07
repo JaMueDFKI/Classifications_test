@@ -1,8 +1,10 @@
 import os
+from datetime import datetime
 
 import clearml
 from clearml import Dataset, Task
 import tensorflow as tf
+from keras.callbacks import TensorBoard
 from tensorflow.keras.metrics import Recall, Precision
 
 from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model
@@ -55,7 +57,13 @@ def start_task():
 
     model.load_weights(models_path + "/BinaryClassificationModel/model.h5")
 
-    model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY))
+    logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "logs/scalars/training/"
+        + datetime.now().strftime("%Y%m%d-%H%M%S"))
+    tensorboard_callback = TensorBoard(log_dir=logdir)
+
+    training_results = model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
+                                 callbacks=[tensorboard_callback])
+    print(training_results)
 
     test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
     test_dataX = load_csv_from_folder(test_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
@@ -66,7 +74,12 @@ def start_task():
     test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX.loc[:, "smartMeter"],
                                                         dataset_Y=test_dataY.loc[:, "kettle"])
 
-    results = model.evaluate(test_dataX, test_dataY)
+    logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "logs/scalars/test/"
+              + datetime.now().strftime("%Y%m%d-%H%M%S"))
+    tensorboard_callback = TensorBoard(log_dir=logdir)
+
+    results = model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback])
+    print(results)
 
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
     model.save_weights(models_dir + "/BinaryClassificationModel/model.h5", overwrite=True)
