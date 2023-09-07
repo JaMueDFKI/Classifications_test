@@ -8,7 +8,7 @@ from BinaryClassificationUtils import create_model
 def init():
     model = create_model()
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "\\Models"
-    model.save(models_dir + "\\BinaryClassificationModel")
+    model.save_weights(models_dir + "\\BinaryClassificationModel/model.h5")
 
     project_root = os.path.dirname(os.path.abspath(os.path.curdir))
     dataset = Dataset.create(dataset_project="Binary_Classification_Test", dataset_name="Models")

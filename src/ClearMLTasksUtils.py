@@ -1,9 +1,11 @@
+import os
+
 import clearml
 from clearml import Dataset, Task
 import tensorflow as tf
 from tensorflow.keras.metrics import Recall, Precision
 
-from BinaryClassificationUtils import load_csv_from_folder, create_dataset
+from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model
 
 from tensorflow_addons.metrics import F1Score
 
@@ -26,8 +28,6 @@ def start_task():
     models = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='Models')
     models_path = models.get_mutable_local_copy("Models/", True)
 
-    model = tf.keras.models.load_model(models_path + "\\BinaryClassificationModel")
-
     dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
     dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
@@ -45,12 +45,15 @@ def start_task():
 
     val_dataX, val_dataY, val_index = create_dataset(dataset_X=val_dataX.loc[:, "smartMeter"],
                                                      dataset_Y=val_dataY.loc[:, "kettle"])
+    model = create_model()
 
     model.compile(loss="binary_crossentropy", optimizer="adam",
                   metrics=[F1Score(),
                            "accuracy",
                            Recall(name="recall"),
                            Precision(name="precision")])
+
+    model.load_weights(models_path + "/BinaryClassificationModel/model.h5")
 
     model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY))
 
@@ -64,6 +67,9 @@ def start_task():
                                                         dataset_Y=test_dataY.loc[:, "kettle"])
 
     results = model.evaluate(test_dataX, test_dataY)
+
+    models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "\\Models"
+    model.save_weights(models_dir + "\\BinaryClassificationModel/model.h5")
 
     # save the Results of the Model for experiment_number
     dataset = Dataset.create(
