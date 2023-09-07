@@ -1,7 +1,7 @@
 import clearml
 from clearml import Dataset, Task
 import tensorflow as tf
-from tf.keras.metrics import Recall, Precision
+from tensorflow.keras.metrics import Recall, Precision
 
 from BinaryClassificationUtils import load_csv_from_folder, create_dataset
 

@@ -2,10 +2,10 @@ import os.path
 import unittest
 
 import tensorflow as tf
-from tf.keras.losses import binary_crossentropy
-from tf.keras.metrics import Recall, Precision
+from tensorflow.keras.losses import binary_crossentropy
+from tensorflow.keras.metrics import Recall, Precision
 from tensorflow_addons.metrics import F1Score
-from tf.keras.optimizers import Adam
+from tensorflow.keras.optimizers import Adam
 
 from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model
 RESAMPLING_RATE = "10s"
