@@ -69,7 +69,7 @@ def start_task():
     results = model.evaluate(test_dataX, test_dataY)
 
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "\\Models"
-    model.save_weights(models_dir + "\\BinaryClassificationModel/model.h5")
+    model.save_weights(models_dir + "\\BinaryClassificationModel/model.h5", overwrite=True)
 
     # save the Results of the Model for experiment_number
     dataset = Dataset.create(
