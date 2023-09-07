@@ -1,14 +1,10 @@
 import clearml
 from clearml import Dataset, Task
-from keras import Model, Sequential
-from tensorflow.python import keras
+from tensorflow.keras.metrics import Recall, Precision
 
 from BinaryClassificationUtils import load_csv_from_folder, create_dataset
 
-from keras.losses import binary_crossentropy
-from keras.metrics import Recall, Precision
 from tensorflow_addons.metrics import F1Score
-from keras.optimizers import Adam
 
 RESAMPLING_RATE = "10s"
 
