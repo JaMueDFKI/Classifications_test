@@ -68,8 +68,8 @@ def start_task():
 
     results = model.evaluate(test_dataX, test_dataY)
 
-    models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "\\Models"
-    model.save_weights(models_dir + "\\BinaryClassificationModel/model.h5", overwrite=True)
+    models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
+    model.save_weights(models_dir + "/BinaryClassificationModel/model.h5", overwrite=True)
 
     # save the Results of the Model for experiment_number
     dataset = Dataset.create(
@@ -89,13 +89,13 @@ def start_task():
     dataset.finalize()
     print("Models uploaded.")
 
-    dataset = Dataset.create(
-        dataset_project="Binary_Classification_Test", dataset_name="DataBases"
-    )
-    dataset.add_files(path='DataBases/')
-    dataset.upload(chunk_size=100)
-    dataset.finalize()
-    print("DataBases uploaded.")
+    # dataset = Dataset.create(
+    #     dataset_project="Binary_Classification_Test", dataset_name="DataBases"
+    # )
+    # dataset.add_files(path='DataBases/')
+    # dataset.upload(chunk_size=100)
+    # dataset.finalize()
+    # print("DataBases uploaded.")
 
 
 if __name__ == '__main__':
