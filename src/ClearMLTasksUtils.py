@@ -50,7 +50,7 @@ def start_task():
     model = create_model()
 
     model.compile(loss="binary_crossentropy", optimizer="adam",
-                  metrics=[F1Score(num_classes=1),
+                  metrics=[F1Score(num_classes=1, dtype=float),
                            "accuracy",
                            Recall(name="recall"),
                            Precision(name="precision")])
@@ -74,12 +74,11 @@ def start_task():
     test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX.loc[:, "smartMeter"],
                                                         dataset_Y=test_dataY.loc[:, "kettle"])
 
-    logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "logs/scalars/test/"
-              + datetime.now().strftime("%Y%m%d-%H%M%S"))
-    tensorboard_callback = TensorBoard(log_dir=logdir)
+    # logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "logs/scalars/test/"
+    #           + datetime.now().strftime("%Y%m%d-%H%M%S"))
+    # tensorboard_callback = TensorBoard(log_dir=logdir)
 
     results = model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback])
-    print(results)
 
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
     model.save_weights(models_dir + "/BinaryClassificationModel/model.h5", overwrite=True)
