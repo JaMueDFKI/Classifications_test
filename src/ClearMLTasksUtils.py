@@ -1,5 +1,7 @@
 import clearml
 from clearml import Dataset, Task
+from keras import Model, Sequential
+from tensorflow.python import keras
 
 
 def start_task():
@@ -17,6 +19,45 @@ def start_task():
     # get local copy of Results
     models = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='Models')
     models_path = models.get_mutable_local_copy("Models/", True)
+
+    model = keras.models.load_model(models_path + "\\BinaryClassificationModel")
+
+    dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
+    dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
+
+    dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
+    dataY = load_csv_from_folder(dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+
+    dataX, dataY, index = create_dataset(dataset_X=dataX.loc[:, "smartMeter"],
+                                         dataset_Y=dataY.loc[:, "kettle"])
+
+    val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
+    val_dataX = load_csv_from_folder(val_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
+
+    val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
+    val_dataY = load_csv_from_folder(val_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+
+    val_dataX, val_dataY, val_index = create_dataset(dataset_X=val_dataX.loc[:, "smartMeter"],
+                                                     dataset_Y=val_dataY.loc[:, "kettle"])
+
+    model.compile(loss="binary_crossentropy", optimizer="adam",
+                  metrics=[F1Score(),
+                           "accuracy",
+                           Recall(name="recall"),
+                           Precision(name="precision")])
+
+    model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY))
+
+    test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
+    test_dataX = load_csv_from_folder(test_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
+
+    test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
+    test_dataY = load_csv_from_folder(test_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+
+    test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX.loc[:, "smartMeter"],
+                                                        dataset_Y=test_dataY.loc[:, "kettle"])
+
+    results = model.evaluate(test_dataX, test_dataY)
 
     # save the Results of the Model for experiment_number
     dataset = Dataset.create(
@@ -47,3 +88,5 @@ def start_task():
 
 if __name__ == '__main__':
     start_task()
+
+
