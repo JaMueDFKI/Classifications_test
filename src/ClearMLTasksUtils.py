@@ -48,7 +48,7 @@ def start_task():
     model = create_model()
 
     model.compile(loss="binary_crossentropy", optimizer="adam",
-                  metrics=[F1Score(num_classes=2),
+                  metrics=[F1Score(num_classes=1),
                            "accuracy",
                            Recall(name="recall"),
                            Precision(name="precision")])
