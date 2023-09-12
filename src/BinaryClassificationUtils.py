@@ -8,7 +8,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv1D, Flatten, Dense
 from numpy.lib.stride_tricks import sliding_window_view
 
-WINDOW_SIZE = 99
+WINDOW_SIZE = 599
 
 def load_csv_from_folder(folder, index=None, axis=0):
     script_dir = os.path.dirname(__file__) # <-- absolute dir the script is in

@@ -11,11 +11,12 @@ from BinaryClassificationUtils import load_csv_from_folder, create_dataset, crea
 
 from tensorflow_addons.metrics import F1Score
 
-RESAMPLING_RATE = "10s"
+RESAMPLING_RATE = "1s"
 
 
 def start_task():
-    task = Task.init(project_name='Binary_Classification_Test', task_name=f'Experiment Test Binary')
+    task = Task.init(project_name='Binary_Classification_Test',
+                     task_name=f'Experiment Test Binary changed wnd size and Resampling Rate')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases
@@ -55,10 +56,10 @@ def start_task():
                            Recall(name="recall"),
                            Precision(name="precision")])
 
-    model.load_weights(models_path + "/BinaryClassificationModel/model.h5")
+    model.load_weights(models_path + "/BinaryClassificationChanged/model.h5")
 
     logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "logs/scalars/training/"
-        + datetime.now().strftime("%Y%m%d-%H%M%S"))
+              + datetime.now().strftime("%Y%m%d-%H%M%S"))
     tensorboard_callback = TensorBoard(log_dir=logdir)
 
     training_results = model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
@@ -81,7 +82,7 @@ def start_task():
     results = model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback])
 
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
-    model.save_weights(models_dir + "/BinaryClassificationModel/model.h5", overwrite=True)
+    model.save_weights(models_dir + "/BinaryClassificationChanged/model.h5", overwrite=True)
 
     # save the Results of the Model for experiment_number
     dataset = Dataset.create(
