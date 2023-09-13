@@ -2,6 +2,8 @@ import glob
 import os
 import shutil
 
+import pandas as pd
+
 
 def split_data_into_weeks(src_folder, dst_folder):
     script_dir = os.path.dirname(__file__)  # <-- absolute dir the script is in
@@ -31,9 +33,20 @@ def split_data_into_weeks(src_folder, dst_folder):
             files_to_dump = []
 
 
+def get_all_devices(file_path: str) -> list:
+
+    header = list(pd.read_csv(file_path).columns)
+    header.remove("timestamp")
+    header.remove("smartMeter")
+    return header
+
+
 if __name__ == '__main__':
-    src_folder = (os.path.dirname(os.path.abspath(os.path.curdir))
-                  + "\\Resources\\TimeSeriesData\\TimeSeriesData\\ActionSeq_active_phases")
-    dst_folder = (os.path.dirname(os.path.abspath(os.path.curdir))
-                  + "\\Resources\\TimeDataWeeks\\Active_phases")
-    split_data_into_weeks(src_folder, dst_folder)
+    # src_folder = (os.path.dirname(os.path.abspath(os.path.curdir))
+    #               + "\\Resources\\TimeSeriesData\\TimeSeriesData\\ActionSeq_active_phases")
+    # dst_folder = (os.path.dirname(os.path.abspath(os.path.curdir))
+    #               + "\\Resources\\TimeDataWeeks\\Active_phases")
+    # split_data_into_weeks(src_folder, dst_folder)
+    filepath = (os.path.dirname(os.path.abspath(os.path.curdir))
+                + "\\Resources\\TimeSeriesData\\TimeSeriesData\\2022-12-05.csv")
+    print(get_all_devices(filepath))

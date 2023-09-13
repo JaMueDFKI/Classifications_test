@@ -8,9 +8,10 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv1D, Flatten, Dense
 from numpy.lib.stride_tricks import sliding_window_view
 
-WINDOW_SIZE = 599
+WINDOW_SIZE = 99
 
-def load_csv_from_folder(folder, index=None, axis=0):
+
+def load_csv_from_folder(folder, index=None, axis=0) -> pd.DataFrame:
     script_dir = os.path.dirname(__file__) # <-- absolute dir the script is in
     rel_path = f"{folder}/*.csv" #DataBases/
     abs_path = os.path.join(script_dir, rel_path)
@@ -28,6 +29,19 @@ def load_csv_from_folder(folder, index=None, axis=0):
         li.append(df)
 
     return pd.concat(li, axis=axis, ignore_index=False)
+
+
+def load_label_data(devices, folder, index=None, axis=0) -> pd.DataFrame:
+    csv_data = load_csv_from_folder(folder, index, axis)
+    csv_data.fillna(0, inplace=True)
+    csv_data = csv_data.astype(int)
+
+    csv_columns = csv_data.columns
+    for device in devices:
+        if device not in csv_columns:
+            csv_data[device] = [0] * len(csv_data.index)
+
+    return csv_data
 
 
 def create_model():
@@ -62,3 +76,11 @@ def create_dataset(dataset_X, dataset_Y, window_size=WINDOW_SIZE):
     dataY = np.array(dataset_Y.iloc[gap:-gap])
     dataY[dataY > 10] = 1
     return dataX, dataY, index
+
+
+if __name__ == '__main__':
+    dataY_folder = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Resources/TimeDataWeeks/Active_phases/Week0"
+    devices = ["kettle", "computer", "coffee machine", "microwave", "television"]
+    data_Y = load_label_data(devices, dataY_folder, index="timestamp")
+
+    print(data_Y)
