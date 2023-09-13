@@ -35,7 +35,7 @@ def start_task():
 
         task = Task.init(project_name='Binary_Classification_Test',
                          task_name=f'Experiment Test Binary ' + device)
-        # task.execute_remotely(queue_name='default', clone=False, exit_process=True)
+        task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
 
         dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"

@@ -40,7 +40,7 @@ def init_model(filepath: str):
 
 def init_binary_all_devices(folder: str):
     devices = get_all_devices(os.path.dirname(os.path.abspath(os.path.curdir))
-                              + "Resources/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
+                              + "/Resources/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
 
     for device in devices:
         model = create_model()
@@ -57,3 +57,4 @@ if __name__ == '__main__':
     # init()
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models/BinaryClassificationAllDevices"
     # init_model(models_dir + "\\BinaryClassificationChanged/model.h5")
+    init_binary_all_devices(models_dir)
