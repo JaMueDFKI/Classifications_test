@@ -145,7 +145,7 @@ def init_test():
 
 
 if __name__ == '__main__':
-    init_test()
-    # start_task()
+    # init_test()
+    start_task()
 
 
