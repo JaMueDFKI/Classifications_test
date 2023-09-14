@@ -38,7 +38,7 @@ def start_task():
     # get local copy of Models
     models = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='Models')
     models_path = models.get_mutable_local_copy(
-        os.path.dirname(os.path.abspath(os.path.curdir)) + "Models/", True
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models", True
     )
 
     dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
