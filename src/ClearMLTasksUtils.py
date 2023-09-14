@@ -6,6 +6,7 @@ from clearml import Dataset, Task
 import tensorflow as tf
 from keras.callbacks import TensorBoard
 from tensorflow.keras.metrics import Recall, Precision
+from tensorflow.python.keras.callbacks import CSVLogger
 
 from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model, load_label_data
 
@@ -63,13 +64,19 @@ def start_task():
 
     model.load_weights(models_path + "/BinaryClassificationChanged/model.h5")
 
-    logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "logs/scalars/training/"
-              + datetime.now().strftime("%Y%m%d-%H%M%S"))
+    time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
+
+    logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "/Results/BinaryClassification/training/"
+              + time_test_started)
+
+    if not os.path.exists(logdir):
+        os.mkdir(logdir)
+
     tensorboard_callback = TensorBoard(log_dir=logdir)
+    csv_callback = CSVLogger(logdir + "/results_csv", append=True)
 
     training_results = model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
-                                 callbacks=[tensorboard_callback])
-    print(training_results)
+                                 callbacks=[tensorboard_callback, csv_callback])
 
     test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
     test_dataX = load_csv_from_folder(test_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
@@ -80,11 +87,13 @@ def start_task():
     test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX.loc[:, "smartMeter"],
                                                         dataset_Y=test_dataY.loc[:, "kettle"])
 
-    # logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "logs/scalars/test/"
-    #           + datetime.now().strftime("%Y%m%d-%H%M%S"))
-    # tensorboard_callback = TensorBoard(log_dir=logdir)
+    logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "/Results/BinaryClassification/test/"
+              + time_test_started)
 
-    results = model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback])
+    tensorboard_callback = TensorBoard(log_dir=logdir)
+    csv_callback = CSVLogger(logdir + "/results_csv", append=True)
+
+    model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback, csv_callback])
 
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
     model.save_weights(models_dir + "/BinaryClassificationChanged/model.h5", overwrite=True)
