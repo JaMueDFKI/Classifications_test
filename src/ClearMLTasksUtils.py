@@ -78,8 +78,9 @@ def start_task():
         os.mkdir(logdir)
 
     tensorboard_callback = TensorBoard(log_dir=logdir)
-    csv_callback = CSVLogger(logdir + "/results_csv", append=True)
+    csv_callback = CSVLogger(logdir + "/results_csv.csv")
 
+    print("Start training")
     model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
                                  callbacks=[tensorboard_callback, csv_callback])
 
@@ -95,8 +96,9 @@ def start_task():
     logdir = (dataset_path_results + "/BinaryClassification/test/" + time_test_started)
 
     tensorboard_callback = TensorBoard(log_dir=logdir)
-    csv_callback = CSVLogger(logdir + "/results_csv.xlsx", append=True)
+    csv_callback = CSVLogger(logdir + "/results_csv.csv")
 
+    print("test started")
     model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback, csv_callback])
 
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
