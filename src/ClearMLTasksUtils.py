@@ -21,7 +21,7 @@ def start_task():
 
     task = Task.init(project_name='Binary_Classification_Test',
                      task_name=f'Experiment Test Binary ')
-    task.execute_remotely(queue_name='default', clone=False, exit_process=True)
+    # task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases
     dataset_databases = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='DataBases')
