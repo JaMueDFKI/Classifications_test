@@ -76,7 +76,7 @@ def start_task():
         if not os.path.exists(logdir):
             os.mkdir(logdir)
 
-        tensorboard_callback = TensorBoard(log_dir=logdir)
+        tensorboard_callback = TensorBoard(log_dir=logdir + "/" + device)
         csv_callback = CSVLogger(logdir + "/results_" + device + ".csv")
 
         print("Start training " + device)
@@ -99,8 +99,12 @@ def start_task():
         if not os.path.exists(logdir):
             os.mkdir(logdir)
 
-        tensorboard_callback = TensorBoard(log_dir=logdir)
+        tensorboard_callback = TensorBoard(log_dir=logdir + "/" + device)
         csv_callback = CSVLogger(logdir + "/results_" + device + ".csv")
+
+        csv_callback.on_test_begin = csv_callback.on_train_begin
+        csv_callback.on_test_batch_end = csv_callback.on_epoch_end
+        csv_callback.on_test_end = csv_callback.on_train_end
 
         print("Start Evaluation " + device)
 
@@ -145,8 +149,30 @@ def init_test():
     dataset.finalize()
 
 
+def get_datasets_from_remote():
+    # get local copy of DataBases
+    dataset_databases = Dataset.get(dataset_project='Binary_ClassificationAllDevices_Test', dataset_name='DataBases')
+    dataset_path_databases = dataset_databases.get_mutable_local_copy(
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "/DataBases", True
+    )
+
+    # get local copy of Results
+    dataset_results = Dataset.get(dataset_project='Binary_ClassificationAllDevices_Test', dataset_name='Results')
+    dataset_path_results = dataset_results.get_mutable_local_copy(
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "/Results", True
+    )
+
+    # get local copy of Models
+    models = Dataset.get(dataset_project='Binary_ClassificationAllDevices_Test', dataset_name='Models')
+    models_path = models.get_mutable_local_copy(
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models", True
+    )
+
+
 if __name__ == '__main__':
     # init_test()
     start_task()
+    # get_datasets_from_remote()
+
 
 
