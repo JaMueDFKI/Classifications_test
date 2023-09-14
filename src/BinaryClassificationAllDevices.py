@@ -19,15 +19,21 @@ RESAMPLING_RATE = "10s"
 def start_task():
     # get local copy of DataBases
     dataset_databases = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='DataBases')
-    dataset_path_databases = dataset_databases.get_mutable_local_copy("DataBases/", True)
+    dataset_path_databases = dataset_databases.get_mutable_local_copy(
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "/DataBases", True
+    )
 
     # get local copy of Results
     dataset_results = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='Results')
-    dataset_path_results = dataset_results.get_mutable_local_copy("Results/", True)
+    dataset_path_results = dataset_results.get_mutable_local_copy(
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "/Results", True
+    )
 
     # get local copy of Results
     models = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='Models')
-    models_path = models.get_mutable_local_copy("Models/", True)
+    models_path = models.get_mutable_local_copy(
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "Models/", True
+    )
 
     devices = get_all_devices(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
 
