@@ -95,6 +95,9 @@ def start_task():
 
         logdir = (dataset_path_results + "/BinaryClassificationAllDevices/test/" + time_test_started)
 
+        if not os.path.exists(logdir):
+            os.mkdir(logdir)
+
         tensorboard_callback = TensorBoard(log_dir=logdir)
         csv_callback = CSVLogger(logdir + "/results_" + device + ".csv")
 
