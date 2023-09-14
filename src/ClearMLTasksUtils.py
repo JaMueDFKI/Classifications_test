@@ -95,18 +95,20 @@ def start_task():
     logdir = (dataset_path_results + "/BinaryClassification/test/" + time_test_started)
 
     tensorboard_callback = TensorBoard(log_dir=logdir)
-    csv_callback = CSVLogger(logdir + "/results_csv", append=True)
+    csv_callback = CSVLogger(logdir + "/results_csv.xlsx", append=True)
 
     model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback, csv_callback])
 
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
     model.save_weights(models_dir + "/BinaryClassificationModel/model.h5", overwrite=True)
 
+    project_root = os.path.dirname(os.path.abspath(os.path.curdir))
+
     # save the Results of the Model for experiment_number
     dataset = Dataset.create(
         dataset_project="Binary_Classification_Test", dataset_name="Results"
     )
-    dataset.add_files(path='Results/')
+    dataset.add_files(path=project_root + '/Results')
     dataset.upload(chunk_size=100)
     dataset.finalize()
     print("Results uploaded.")
@@ -115,7 +117,7 @@ def start_task():
     dataset = Dataset.create(
         dataset_project="Binary_Classification_Test", dataset_name="Models"
     )
-    dataset.add_files(path='Models/')
+    dataset.add_files(path=project_root + '/Models')
     dataset.upload(chunk_size=100)
     dataset.finalize()
     print("Models uploaded.")
