@@ -34,7 +34,7 @@ def init_model(filepath: str):
 
     project_root = os.path.dirname(os.path.abspath(os.path.curdir))
     dataset = Dataset.create(dataset_project="Binary_Classification_Test", dataset_name="Models")
-    dataset.add_files(path=project_root + '\\Models/')
+    dataset.add_files(path=project_root + '/Models')
     dataset.upload(chunk_size=100)
     dataset.finalize()
 
