@@ -6,6 +6,7 @@ from clearml import Dataset, Task
 import tensorflow as tf
 from keras.callbacks import TensorBoard
 from tensorflow.keras.metrics import Recall, Precision
+from tensorflow.python.keras.callbacks import CSVLogger
 
 from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model, load_label_data
 
@@ -108,25 +109,25 @@ def start_task():
         models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
         model.save_weights(models_dir + "/BinaryClassificationAllDevices/model_" + device + ".h5", overwrite=True)
 
-        project_root = os.path.dirname(os.path.abspath(os.path.curdir))
+    project_root = os.path.dirname(os.path.abspath(os.path.curdir))
 
-        # save the Results of the Model for experiment_number
-        dataset = Dataset.create(
-            dataset_project='Binary_ClassificationAllDevices_Test', dataset_name="Results"
-        )
-        dataset.add_files(path=project_root + '/Results')
-        dataset.upload(chunk_size=100)
-        dataset.finalize()
-        print("Results uploaded.")
+    # save the Results of the Model for experiment_number
+    dataset = Dataset.create(
+        dataset_project='Binary_ClassificationAllDevices_Test', dataset_name="Results"
+    )
+    dataset.add_files(path=project_root + '/Results')
+    dataset.upload(chunk_size=100)
+    dataset.finalize()
+    print("Results uploaded.")
 
-        # save the Model for experiment_number
-        dataset = Dataset.create(
-            dataset_project='Binary_ClassificationAllDevices_Test', dataset_name="Models"
-        )
-        dataset.add_files(path=project_root + '/Models')
-        dataset.upload(chunk_size=100)
-        dataset.finalize()
-        print("Models uploaded.")
+    # save the Model for experiment_number
+    dataset = Dataset.create(
+        dataset_project='Binary_ClassificationAllDevices_Test', dataset_name="Models"
+    )
+    dataset.add_files(path=project_root + '/Models')
+    dataset.upload(chunk_size=100)
+    dataset.finalize()
+    print("Models uploaded.")
 
 
 def init_test():
