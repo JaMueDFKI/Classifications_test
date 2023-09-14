@@ -66,8 +66,7 @@ def start_task():
 
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
-    logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "/Results/BinaryClassification/training/"
-              + time_test_started)
+    logdir = (dataset_path_results + "/BinaryClassification/training/" + time_test_started)
 
     if not os.path.exists(logdir):
         os.mkdir(logdir)
@@ -87,8 +86,7 @@ def start_task():
     test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX.loc[:, "smartMeter"],
                                                         dataset_Y=test_dataY.loc[:, "kettle"])
 
-    logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "/Results/BinaryClassification/test/"
-              + time_test_started)
+    logdir = (dataset_path_results + "/BinaryClassification/test/" + time_test_started)
 
     tensorboard_callback = TensorBoard(log_dir=logdir)
     csv_callback = CSVLogger(logdir + "/results_csv", append=True)
