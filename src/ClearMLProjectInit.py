@@ -48,7 +48,7 @@ def init_binary_all_devices(folder: str):
         model.save_weights(folder + "/model_" + device + ".h5")
 
     project_root = os.path.dirname(os.path.abspath(os.path.curdir))
-    dataset = Dataset.create(dataset_project="Binary_Classification_Test", dataset_name="Models")
+    dataset = Dataset.create(dataset_project='Binary_ClassificationAllDevices_Test', dataset_name="Models")
     dataset.add_files(path=project_root + '/Models/')
     dataset.upload(chunk_size=100)
     dataset.finalize()

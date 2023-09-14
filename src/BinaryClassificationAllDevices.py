@@ -11,39 +11,39 @@ from BinaryClassificationUtils import load_csv_from_folder, create_dataset, crea
 
 from tensorflow_addons.metrics import F1Score
 
+from ClearMLProjectInit import init_binary_all_devices
 from DataUtils import get_all_devices
 
 RESAMPLING_RATE = "10s"
 
 
 def start_task():
+    task = Task.init(project_name='Binary_ClassificationAllDevices_Test',
+                     task_name=f'Experiment Test Binary All Devices')
+    task.execute_remotely(queue_name='default', clone=False, exit_process=True)
+
     # get local copy of DataBases
-    dataset_databases = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='DataBases')
+    dataset_databases = Dataset.get(dataset_project='Binary_ClassificationAllDevices_Test', dataset_name='DataBases')
     dataset_path_databases = dataset_databases.get_mutable_local_copy(
         os.path.dirname(os.path.abspath(os.path.curdir)) + "/DataBases", True
     )
 
     # get local copy of Results
-    dataset_results = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='Results')
+    dataset_results = Dataset.get(dataset_project='Binary_ClassificationAllDevices_Test', dataset_name='Results')
     dataset_path_results = dataset_results.get_mutable_local_copy(
         os.path.dirname(os.path.abspath(os.path.curdir)) + "/Results", True
     )
 
     # get local copy of Results
-    models = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='Models')
+    models = Dataset.get(dataset_project='Binary_ClassificationAllDevices_Test', dataset_name='Models')
     models_path = models.get_mutable_local_copy(
         os.path.dirname(os.path.abspath(os.path.curdir)) + "Models/", True
     )
 
     devices = get_all_devices(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
+    time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
     for device in devices:
-
-        task = Task.init(project_name='Binary_Classification_Test',
-                         task_name=f'Experiment Test Binary ' + device)
-        task.execute_remotely(queue_name='default', clone=False, exit_process=True)
-
-
         dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
         dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
@@ -70,12 +70,18 @@ def start_task():
 
         model.load_weights(models_path + "/BinaryClassificationAllDevices/model_" + device + ".h5")
 
-        logdir = (os.path.dirname(os.path.abspath(os.path.curdir)) + "logs/scalars/training/"
-                  + datetime.now().strftime("%Y%m%d-%H%M%S"))
+        logdir = (dataset_path_results + "/BinaryClassificationAllDevices/training/" + time_test_started)
+
+        if not os.path.exists(logdir):
+            os.mkdir(logdir)
+
         tensorboard_callback = TensorBoard(log_dir=logdir)
+        csv_callback = CSVLogger(logdir + "/results_" + device + ".csv")
+
+        print("Start training " + device)
 
         training_results = model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
-                                     callbacks=[tensorboard_callback])
+                                     callbacks=[tensorboard_callback, csv_callback])
         print(training_results)
 
         test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
@@ -87,31 +93,56 @@ def start_task():
         test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX.loc[:, "smartMeter"],
                                                             dataset_Y=test_dataY.loc[:, device])
 
-        results = model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback])
+        logdir = (dataset_path_results + "/BinaryClassificationAllDevices/test/" + time_test_started)
+
+        tensorboard_callback = TensorBoard(log_dir=logdir)
+        csv_callback = CSVLogger(logdir + "/results_" + device + ".csv")
+
+        print("Start Evaluation " + device)
+
+        model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback, csv_callback])
 
         models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
         model.save_weights(models_dir + "/BinaryClassificationAllDevices/model_" + device + ".h5", overwrite=True)
 
+        project_root = os.path.dirname(os.path.abspath(os.path.curdir))
+
         # save the Results of the Model for experiment_number
         dataset = Dataset.create(
-            dataset_project="Binary_Classification_Test", dataset_name="Results"
+            dataset_project='Binary_ClassificationAllDevices_Test', dataset_name="Results"
         )
-        dataset.add_files(path='Results/')
+        dataset.add_files(path=project_root + '/Results')
         dataset.upload(chunk_size=100)
         dataset.finalize()
         print("Results uploaded.")
 
         # save the Model for experiment_number
         dataset = Dataset.create(
-            dataset_project="Binary_Classification_Test", dataset_name="Models"
+            dataset_project='Binary_ClassificationAllDevices_Test', dataset_name="Models"
         )
-        dataset.add_files(path='Models/')
+        dataset.add_files(path=project_root + '/Models')
         dataset.upload(chunk_size=100)
         dataset.finalize()
         print("Models uploaded.")
 
 
+def init_test():
+    models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
+    init_binary_all_devices(models_dir + "/BinaryClassificationAllDevices")
+
+    dataset = Dataset.create(dataset_project='Binary_ClassificationAllDevices_Test', dataset_name="DataBases")
+    dataset.add_files(path=os.path.dirname(os.path.abspath(os.path.curdir)) + '/Resources')
+    dataset.upload(chunk_size=100)
+    dataset.finalize()
+
+    dataset = Dataset.create(dataset_project='Binary_ClassificationAllDevices_Test', dataset_name="Results")
+    dataset.add_files(path=os.path.dirname(os.path.abspath(os.path.curdir)) + '/Results')
+    dataset.upload(chunk_size=100)
+    dataset.finalize()
+
+
 if __name__ == '__main__':
-    start_task()
+    init_test()
+    # start_task()
 
 

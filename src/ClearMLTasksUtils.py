@@ -154,4 +154,4 @@ def get_datasets_from_remote():
 
 if __name__ == '__main__':
     start_task()
-    get_datasets_from_remote()
+    # get_datasets_from_remote()
