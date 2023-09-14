@@ -18,7 +18,6 @@ RESAMPLING_RATE = "10s"
 
 
 def start_task():
-
     task = Task.init(project_name='Binary_Classification_Test',
                      task_name=f'Experiment Test Binary ')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
@@ -64,9 +63,9 @@ def start_task():
 
     model.compile(loss="binary_crossentropy", optimizer="adam",
                   metrics=[  # F1Score(num_classes=1, dtype=float),
-                           "accuracy",
-                           Recall(name="recall"),
-                           Precision(name="precision")])
+                      "accuracy",
+                      Recall(name="recall"),
+                      Precision(name="precision")])
 
     model.load_weights(models_path + "/BinaryClassificationModel/model.h5")
 
@@ -82,7 +81,7 @@ def start_task():
 
     print("Start training")
     model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
-                                 callbacks=[tensorboard_callback, csv_callback])
+              callbacks=[tensorboard_callback, csv_callback])
 
     test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
     test_dataX = load_csv_from_folder(test_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
@@ -133,7 +132,26 @@ def start_task():
     # print("DataBases uploaded.")
 
 
+def get_datasets_from_remote():
+    # get local copy of DataBases
+    dataset_databases = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='DataBases')
+    dataset_path_databases = dataset_databases.get_mutable_local_copy(
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "/DataBases", True
+    )
+
+    # get local copy of Results
+    dataset_results = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='Results')
+    dataset_path_results = dataset_results.get_mutable_local_copy(
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "/Results", True
+    )
+
+    # get local copy of Models
+    models = Dataset.get(dataset_project='Binary_Classification_Test', dataset_name='Models')
+    models_path = models.get_mutable_local_copy(
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models", True
+    )
+
+
 if __name__ == '__main__':
     start_task()
-
-
+    get_datasets_from_remote()
