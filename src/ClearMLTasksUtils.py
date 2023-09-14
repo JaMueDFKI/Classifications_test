@@ -62,7 +62,7 @@ def start_task():
                            Recall(name="recall"),
                            Precision(name="precision")])
 
-    model.load_weights(models_path + "/BinaryClassificationChanged/model.h5")
+    model.load_weights(models_path + "/BinaryClassificationModel/model.h5")
 
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
@@ -75,7 +75,7 @@ def start_task():
     tensorboard_callback = TensorBoard(log_dir=logdir)
     csv_callback = CSVLogger(logdir + "/results_csv", append=True)
 
-    training_results = model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
+    model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
                                  callbacks=[tensorboard_callback, csv_callback])
 
     test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
@@ -96,7 +96,7 @@ def start_task():
     model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback, csv_callback])
 
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
-    model.save_weights(models_dir + "/BinaryClassificationChanged/model.h5", overwrite=True)
+    model.save_weights(models_dir + "/BinaryClassificationModel/model.h5", overwrite=True)
 
     # save the Results of the Model for experiment_number
     dataset = Dataset.create(
