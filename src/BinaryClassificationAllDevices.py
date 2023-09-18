@@ -179,7 +179,7 @@ def create_fake_model():
     return model
 
 
-def fake_model_training():
+def fake_model_training(dataset_path_results, time_test_started):
     """
     Trains a fake model for one epoch to display the graphs for the devices correctly in CleraML.
     """
@@ -190,10 +190,18 @@ def fake_model_training():
                                 Recall(name="recall"),
                                 Precision(name="precision")])
 
-    tensorboard_callback = TensorBoard()
+    logdir = (dataset_path_results + "/BinaryClassificationAllDevices/training/" + time_test_started)
+    tensorboard_callback = TensorBoard(log_dir=logdir + "/fake")
+    if not os.path.exists(logdir):
+        os.mkdir(logdir)
 
     fake_model.fit(x=[1], y=[1], epochs=1, validation_data=([1], [1]),
                    callbacks=[tensorboard_callback])
+
+    logdir = (dataset_path_results + "/BinaryClassificationAllDevices/test/" + time_test_started)
+    if not os.path.exists(logdir):
+        os.mkdir(logdir)
+    tensorboard_callback = TensorBoard(log_dir=logdir + "/fake")
 
     fake_model.evaluate(x=[1], y=[1], callbacks=[tensorboard_callback])
 
