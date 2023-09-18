@@ -6,7 +6,9 @@ from clearml import Dataset, Task
 import tensorflow as tf
 from keras.callbacks import TensorBoard
 from tensorflow.keras.metrics import Recall, Precision
+from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.callbacks import CSVLogger
+from tensorflow.python.keras.layers import Dense
 
 from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model, load_label_data
 
@@ -43,6 +45,8 @@ def start_task():
 
     devices = get_all_devices(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
+
+    fake_model_training()
 
     for device in devices:
         dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
@@ -167,6 +171,31 @@ def get_datasets_from_remote():
     models_path = models.get_mutable_local_copy(
         os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models", True
     )
+
+
+def create_fake_model():
+    model = Sequential()
+    model.add(Dense(1, activation='sigmoid'))
+    return model
+
+
+def fake_model_training():
+    """
+    Trains a fake model for one epoch to display the graphs for the devices correctly in CleraML.
+    """
+    fake_model = create_fake_model()
+
+    fake_model.compile(loss="binary_crossentropy", optimizer="adam",
+                       metrics=["accuracy",
+                                Recall(name="recall"),
+                                Precision(name="precision")])
+
+    tensorboard_callback = TensorBoard()
+
+    fake_model.fit(x=[1], y=[1], epochs=1, validation_data=([1], [1]),
+                   callbacks=[tensorboard_callback])
+
+    fake_model.evaluate(x=[1], y=[1], callbacks=[tensorboard_callback])
 
 
 if __name__ == '__main__':
