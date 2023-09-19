@@ -36,7 +36,7 @@ def start_task():
     # get local copy of Results
     models = Dataset.get(dataset_project='MultiClassing_Classification_Test', dataset_name='Models')
     models_path = models.get_mutable_local_copy(
-        os.path.dirname(os.path.abspath(os.path.curdir)) + "Models/", True
+        os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models", True
     )
 
     devices = get_all_devices(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
@@ -133,7 +133,7 @@ def start_task():
 
 def init_test():
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
-    init_multiclassing(models_dir + "/MultiClassingClassification/model.h5")
+    init_multiclassing(models_dir + "/MultiClassingClassificationModel/model.h5")
 
     dataset = Dataset.create(dataset_project='MultiClassing_Classification_Test', dataset_name="DataBases")
     dataset.add_files(path=os.path.dirname(os.path.abspath(os.path.curdir)) + '/Resources')
@@ -167,6 +167,6 @@ def get_datasets_from_remote():
 
 
 if __name__ == '__main__':
-    init_test()
-    # start_task()
+    # init_test()
+    start_task()
     # get_datasets_from_remote()
