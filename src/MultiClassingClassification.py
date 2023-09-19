@@ -8,7 +8,8 @@ from keras.callbacks import TensorBoard
 from tensorflow.keras.metrics import Recall, Precision
 from tensorflow.python.keras.callbacks import CSVLogger
 
-from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model, load_label_data
+from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model, load_label_data, \
+    create_multiclassing_model
 
 from ClearMLProjectModelInit import  init_multiclassing
 from DataUtils import get_all_devices
@@ -59,7 +60,7 @@ def start_task():
 
     val_dataX, val_dataY, val_index = create_dataset(dataset_X=val_dataX.loc[:, "smartMeter"],
                                                      dataset_Y=val_dataY)
-    model = create_model()
+    model = create_multiclassing_model(len(devices))
 
     model.compile(loss="categorical_crossentropy", optimizer="adam",
                   metrics=["accuracy",
