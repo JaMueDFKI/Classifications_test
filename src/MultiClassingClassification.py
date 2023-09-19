@@ -66,7 +66,7 @@ def start_task():
                            Recall(name="recall"),
                            Precision(name="precision")])
 
-    model.load_weights(models_path + "/MultiClassingClassification/model.h5")
+    model.load_weights(models_path + "/MultiClassingClassificationModel/model.h5")
 
     logdir = (dataset_path_results + "/MultiClassingClassification/training/" + time_test_started)
 
@@ -108,7 +108,7 @@ def start_task():
     model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback, csv_callback])
 
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
-    model.save_weights(models_dir + "/MultiClassingClassification/model.h5", overwrite=True)
+    model.save_weights(models_dir + "/MultiClassingClassificationModel/model.h5", overwrite=True)
 
     project_root = os.path.dirname(os.path.abspath(os.path.curdir))
 
