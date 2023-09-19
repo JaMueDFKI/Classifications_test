@@ -61,6 +61,28 @@ def create_model():
     return model
 
 
+def create_multiclassing_model(number_devices: int):
+    """
+    Creates a multiclassing model.
+    :param number_devices: The number of devices, for which the multiclassing model should be created.
+    :return: A multiclassing model for number_devices classes.
+    """
+    model = Sequential()  # add model layers
+    model.add(Conv1D(30, kernel_size=10, activation="relu", strides=1, input_shape=(WINDOW_SIZE, 1)))
+    model.add(Conv1D(30, kernel_size=8, activation="relu", strides=1))
+    model.add(Conv1D(40, kernel_size=6, activation="relu", strides=1))
+    # model.add(Dropout(0.1))
+    model.add(Conv1D(50, kernel_size=5, activation="relu", strides=1))
+    # model.add(Dropout(0.2))
+    model.add(Conv1D(50, kernel_size=5, activation="relu", strides=1))
+    # model.add(Dropout(0.4))
+    model.add(Flatten())
+    model.add(Dense(1024, activation='relu'))
+    # model.add(Dropout(0.5))
+    model.add(Dense(number_devices, activation='softmax'))
+    return model
+
+
 def create_dataset(dataset_X, dataset_Y, window_size=WINDOW_SIZE):
     gap = int((window_size-1)/2)
     dataX, dataY = [], []
