@@ -44,6 +44,13 @@ def load_label_data(devices, folder, index=None, axis=0) -> pd.DataFrame:
     return csv_data
 
 
+def add_idle(label_data: pd.DataFrame) -> pd.DataFrame:
+    sum_ser = label_data.sum(axis=1)
+    idle_vector = sum_ser.apply(lambda x: 0 if x > 0 else 1)
+    label_data["Idle"] = idle_vector
+    return label_data
+
+
 def create_model():
     model = Sequential()#add model layers
     model.add(Conv1D(30, kernel_size=10, activation="relu", strides=1, input_shape=(WINDOW_SIZE, 1)))
@@ -79,7 +86,8 @@ def create_multiclassing_model(number_devices: int):
     model.add(Flatten())
     model.add(Dense(1024, activation='relu'))
     # model.add(Dropout(0.5))
-    model.add(Dense(number_devices, activation='softmax'))
+    # number_of_devices + idle node
+    model.add(Dense(number_devices + 1, activation='softmax'))
     return model
 
 
@@ -104,5 +112,6 @@ if __name__ == '__main__':
     dataY_folder = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Resources/TimeDataWeeks/Active_phases/Week0"
     devices = ["kettle", "computer", "coffee machine", "microwave", "television"]
     data_Y = load_label_data(devices, dataY_folder, index="timestamp")
+    label_with_idle = add_idle(data_Y)
 
     print(data_Y)

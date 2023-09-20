@@ -8,10 +8,10 @@ from keras.callbacks import TensorBoard
 from tensorflow.keras.metrics import Recall, Precision
 from tensorflow.python.keras.callbacks import CSVLogger
 
-from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model, load_label_data, \
-    create_multiclassing_model
+from BinaryClassificationUtils import load_csv_from_folder, create_dataset, load_label_data, \
+    create_multiclassing_model, add_idle
 
-from ClearMLProjectModelInit import  init_multiclassing
+from ClearMLProjectModelInit import init_multiclassing
 from DataUtils import get_all_devices
 
 RESAMPLING_RATE = "10s"
@@ -47,7 +47,9 @@ def start_task():
     dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
-    dataY = load_label_data(devices, dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+    dataY = add_idle(
+        load_label_data(devices, dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+    )
 
     dataX, dataY, index = create_dataset(dataset_X=dataX.loc[:, "smartMeter"],
                                          dataset_Y=dataY)
@@ -56,7 +58,9 @@ def start_task():
     val_dataX = load_csv_from_folder(val_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
     val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
-    val_dataY = load_label_data(devices, val_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+    val_dataY = add_idle(
+        load_label_data(devices, val_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+    )
 
     val_dataX, val_dataY, val_index = create_dataset(dataset_X=val_dataX.loc[:, "smartMeter"],
                                                      dataset_Y=val_dataY)
@@ -87,7 +91,9 @@ def start_task():
     test_dataX = load_csv_from_folder(test_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
     test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
-    test_dataY = load_label_data(devices, test_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+    test_dataY = add_idle(
+        load_label_data(devices, test_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+    )
 
     test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX.loc[:, "smartMeter"],
                                                         dataset_Y=test_dataY)
