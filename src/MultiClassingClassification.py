@@ -83,7 +83,7 @@ def start_task():
 
     print("Start training ")
 
-    training_results = model.fit(x=dataX, y=dataY, epochs=10, batch_size=1000, validation_data=(val_dataX, val_dataY),
+    training_results = model.fit(x=dataX, y=dataY, epochs=10, batch_size=100, validation_data=(val_dataX, val_dataY),
                                  callbacks=[tensorboard_callback, csv_callback])
     print(training_results)
 
