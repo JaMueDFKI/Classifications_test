@@ -50,31 +50,31 @@ def start_task():
     dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
     min_max_scaler = MinMaxScaler()
-    dataX_new = pd.DataFrame(
-        min_max_scaler.fit(dataX))
-    dataX_new.index = dataX.index
+    dataX_scaled = pd.DataFrame(
+        min_max_scaler.fit_transform(dataX))
+    dataX_scaled.index = dataX.index
 
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
     dataY = add_idle(
         load_label_data(devices, dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
     )
 
-    dataX, dataY, index = create_dataset(dataset_X=dataX.loc[:, "smartMeter"],
+    dataX, dataY, index = create_dataset(dataset_X=dataX_scaled.loc[:, "smartMeter"],
                                          dataset_Y=dataY)
 
     val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
     val_dataX = load_csv_from_folder(val_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
-    val_dataX = pd.DataFrame(
+    val_dataX_scaled = pd.DataFrame(
         min_max_scaler.fit_transform(val_dataX))
-    val_dataX.index = val_dataX.index
+    val_dataX_scaled.index = val_dataX.index
 
     val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
     val_dataY = add_idle(
         load_label_data(devices, val_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
     )
 
-    val_dataX, val_dataY, val_index = create_dataset(dataset_X=val_dataX.loc[:, "smartMeter"],
+    val_dataX, val_dataY, val_index = create_dataset(dataset_X=val_dataX_scaled.loc[:, "smartMeter"],
                                                      dataset_Y=val_dataY)
     model = create_multiclassing_model(len(devices))
 
@@ -102,16 +102,16 @@ def start_task():
     test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
     test_dataX = load_csv_from_folder(test_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
-    test_dataX = pd.DataFrame(
+    test_dataX_scaled = pd.DataFrame(
         min_max_scaler.fit_transform(test_dataX))
-    test_dataX.index = test_dataX.index
+    test_dataX_scaled.index = test_dataX.index
 
     test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
     test_dataY = add_idle(
         load_label_data(devices, test_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
     )
 
-    test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX.loc[:, "smartMeter"],
+    test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX_scaled.loc[:, "smartMeter"],
                                                         dataset_Y=test_dataY)
 
     logdir = (dataset_path_results + "/MultiClassingClassification/test/" + time_test_started)
