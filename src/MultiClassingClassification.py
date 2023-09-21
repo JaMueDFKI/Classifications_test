@@ -5,8 +5,8 @@ import clearml
 import pandas as pd
 from clearml import Dataset, Task
 import tensorflow as tf
+from sklearn.preprocessing import MinMaxScaler
 from keras.callbacks import TensorBoard
-from keras.integration_test.preprocessing_test_utils import preprocessing
 from tensorflow.keras.metrics import Recall, Precision
 from tensorflow.python.keras.callbacks import CSVLogger
 
@@ -22,7 +22,7 @@ RESAMPLING_RATE = "10s"
 def start_task():
     task = Task.init(project_name='MultiClassing_Classification_Test',
                      task_name=f'Experiment Test Multiclassing')
-    task.execute_remotely(queue_name='default', clone=False, exit_process=True)
+    # task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases
     dataset_databases = Dataset.get(dataset_project='MultiClassing_Classification_Test', dataset_name='DataBases')
@@ -49,9 +49,9 @@ def start_task():
     dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
     dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
-    min_max_scaler = preprocessing.MinMaxScaler()
+    min_max_scaler = MinMaxScaler()
     dataX = pd.DataFrame(
-        min_max_scaler.fit_transform(dataX.values.reshape([-1, 1])))
+        min_max_scaler.fit_transform(dataX))
     dataX.index = dataX.index
 
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
@@ -66,7 +66,7 @@ def start_task():
     val_dataX = load_csv_from_folder(val_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
     val_dataX = pd.DataFrame(
-        min_max_scaler.fit_transform(val_dataX.values.reshape([-1, 1])))
+        min_max_scaler.fit_transform(val_dataX))
     val_dataX.index = val_dataX.index
 
     val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
@@ -103,7 +103,7 @@ def start_task():
     test_dataX = load_csv_from_folder(test_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
     test_dataX = pd.DataFrame(
-        min_max_scaler.fit_transform(test_dataX.values.reshape([-1, 1])))
+        min_max_scaler.fit_transform(test_dataX))
     test_dataX.index = test_dataX.index
 
     test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
