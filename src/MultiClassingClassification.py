@@ -2,9 +2,11 @@ import os
 from datetime import datetime
 
 import clearml
+import pandas as pd
 from clearml import Dataset, Task
 import tensorflow as tf
 from keras.callbacks import TensorBoard
+from keras.integration_test.preprocessing_test_utils import preprocessing
 from tensorflow.keras.metrics import Recall, Precision
 from tensorflow.python.keras.callbacks import CSVLogger
 
@@ -43,8 +45,14 @@ def start_task():
     devices = get_all_devices(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
+
     dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
     dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
+
+    min_max_scaler = preprocessing.MinMaxScaler()
+    dataX = pd.DataFrame(
+        min_max_scaler.fit_transform(dataX.values.reshape([-1, 1])))
+    dataX.index = dataX.index
 
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
     dataY = add_idle(
@@ -56,6 +64,10 @@ def start_task():
 
     val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
     val_dataX = load_csv_from_folder(val_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
+
+    val_dataX = pd.DataFrame(
+        min_max_scaler.fit_transform(val_dataX.values.reshape([-1, 1])))
+    val_dataX.index = val_dataX.index
 
     val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
     val_dataY = add_idle(
@@ -83,12 +95,16 @@ def start_task():
 
     print("Start training ")
 
-    training_results = model.fit(x=dataX, y=dataY, epochs=100, batch_size=1000, validation_data=(val_dataX, val_dataY),
+    training_results = model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
                                  callbacks=[tensorboard_callback, csv_callback])
     print(training_results)
 
     test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
     test_dataX = load_csv_from_folder(test_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
+
+    test_dataX = pd.DataFrame(
+        min_max_scaler.fit_transform(test_dataX.values.reshape([-1, 1])))
+    test_dataX.index = test_dataX.index
 
     test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
     test_dataY = add_idle(
