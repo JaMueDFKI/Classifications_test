@@ -9,6 +9,7 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.callbacks import TensorBoard
 from tensorflow.keras.metrics import Recall, Precision
 from tensorflow.python.keras.callbacks import CSVLogger
+from tensorflow_addons.metrics import F1Score
 
 from ClassificationUtils import load_csv_from_folder, create_dataset, load_label_data, create_multilabeling_model
 
@@ -74,10 +75,14 @@ def start_task():
                                                      dataset_Y=val_dataY)
     model = create_multilabeling_model(len(devices))
 
-    model.compile(loss="binary_crossentropy", optimizer="adam",
-                  metrics=["accuracy",
-                           Recall(name="recall"),
-                           Precision(name="precision")])
+    device_pointer = 0
+    metrics = []
+    for device in devices:
+        metrics.append(Recall(name="recall_" + device, class_id=device_pointer))
+        metrics.append(Precision(name="precision_" + device, class_id=device_pointer))
+        device_pointer += 1
+
+    model.compile(loss="binary_crossentropy", optimizer="adam", metrics=metrics)
 
     model.load_weights(models_path + "/MultiLabelingClassificationModel/model.h5")
 
