@@ -51,7 +51,7 @@ def start_task():
 
     min_max_scaler = MinMaxScaler()
     dataX_new = pd.DataFrame(
-        min_max_scaler.fit_transform(dataX))
+        min_max_scaler.fit(dataX))
     dataX_new.index = dataX.index
 
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
