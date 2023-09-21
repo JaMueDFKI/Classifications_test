@@ -50,9 +50,9 @@ def start_task():
     dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
     min_max_scaler = MinMaxScaler()
-    dataX = pd.DataFrame(
+    dataX_new = pd.DataFrame(
         min_max_scaler.fit_transform(dataX))
-    dataX.index = dataX.index
+    dataX_new.index = dataX.index
 
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
     dataY = add_idle(
