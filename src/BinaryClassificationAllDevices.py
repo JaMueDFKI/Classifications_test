@@ -10,7 +10,7 @@ from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.callbacks import CSVLogger
 from tensorflow.python.keras.layers import Dense
 
-from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model, load_label_data
+from ClassificationUtils import load_csv_from_folder, create_dataset, create_binary_model, load_label_data
 
 from tensorflow_addons.metrics import F1Score
 
@@ -66,7 +66,7 @@ def start_task():
 
         val_dataX, val_dataY, val_index = create_dataset(dataset_X=val_dataX.loc[:, "smartMeter"],
                                                          dataset_Y=val_dataY.loc[:, device])
-        model = create_model()
+        model = create_binary_model()
 
         model.compile(loss="binary_crossentropy", optimizer="adam",
                       metrics=["accuracy",

@@ -10,7 +10,7 @@ from keras.callbacks import TensorBoard
 from tensorflow.keras.metrics import Recall, Precision
 from tensorflow.python.keras.callbacks import CSVLogger
 
-from BinaryClassificationUtils import load_csv_from_folder, create_dataset, load_label_data, \
+from ClassificationUtils import load_csv_from_folder, create_dataset, load_label_data, \
     create_multiclassing_model, add_idle
 
 from ClearMLProjectModelInit import init_multiclassing

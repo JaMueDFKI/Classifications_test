@@ -7,7 +7,7 @@ from tensorflow.keras.metrics import Recall, Precision
 from tensorflow_addons.metrics import F1Score
 from tensorflow.keras.optimizers import Adam
 
-from BinaryClassificationUtils import load_csv_from_folder, create_dataset, create_model
+from ClassificationUtils import load_csv_from_folder, create_dataset, create_binary_model
 RESAMPLING_RATE = "10s"
 
 
@@ -45,7 +45,7 @@ class BinaryClassificationTests(unittest.TestCase):
         print(val_dataY)
         print(val_index)
 
-        model = create_model()
+        model = create_binary_model()
         model.compile(loss="binary_crossentropy", optimizer="adam",
                       metrics=[F1Score(),
                                "accuracy",
