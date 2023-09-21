@@ -53,6 +53,7 @@ def start_task():
     dataX_scaled = pd.DataFrame(
         min_max_scaler.fit_transform(dataX))
     dataX_scaled.index = dataX.index
+    dataX_scaled.columns = dataX.columns
 
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
     dataY = add_idle(
@@ -68,6 +69,7 @@ def start_task():
     val_dataX_scaled = pd.DataFrame(
         min_max_scaler.fit_transform(val_dataX))
     val_dataX_scaled.index = val_dataX.index
+    val_dataX_scaled.columns = val_dataX.columns
 
     val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
     val_dataY = add_idle(
@@ -105,6 +107,7 @@ def start_task():
     test_dataX_scaled = pd.DataFrame(
         min_max_scaler.fit_transform(test_dataX))
     test_dataX_scaled.index = test_dataX.index
+    test_dataX_scaled.columns = test_dataX.columns
 
     test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
     test_dataY = add_idle(
