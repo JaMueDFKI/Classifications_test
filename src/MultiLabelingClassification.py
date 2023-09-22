@@ -55,7 +55,9 @@ def start_task():
     dataX_scaled.columns = dataX.columns
 
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
-    dataY = load_label_data(devices, dataY_folder, index="timestamp").reindex(devices, axis=1) # .resample(RESAMPLING_RATE).median()
+    dataY = (load_label_data(devices, dataY_folder, index="timestamp").reindex(devices, axis=1)
+             .resample(RESAMPLING_RATE).median()
+             )
 
     dataX, dataY, index = create_dataset(dataset_X=dataX_scaled.loc[:, "smartMeter"],
                                          dataset_Y=dataY)
@@ -69,7 +71,9 @@ def start_task():
     val_dataX_scaled.columns = val_dataX.columns
 
     val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
-    val_dataY = load_label_data(devices, val_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+    val_dataY = (load_label_data(devices, val_dataY_folder, index="timestamp").reindex(devices, axis=1)
+                 .resample(RESAMPLING_RATE).median()
+                 )
 
     val_dataX, val_dataY, val_index = create_dataset(dataset_X=val_dataX_scaled.loc[:, "smartMeter"],
                                                      dataset_Y=val_dataY)
@@ -109,7 +113,9 @@ def start_task():
     test_dataX_scaled.columns = test_dataX.columns
 
     test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
-    test_dataY = load_label_data(devices, test_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+    test_dataY = (load_label_data(devices, test_dataY_folder, index="timestamp").reindex(devices, axis=1)
+                  .resample(RESAMPLING_RATE).median()
+                  )
 
     test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX_scaled.loc[:, "smartMeter"],
                                                         dataset_Y=test_dataY)
