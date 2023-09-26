@@ -46,21 +46,9 @@ def start_task():
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
     dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
-    dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
-
-    min_max_scaler = MinMaxScaler()
-    dataX_scaled = pd.DataFrame(
-        min_max_scaler.fit_transform(dataX))
-    dataX_scaled.index = dataX.index
-    dataX_scaled.columns = dataX.columns
-
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
-    dataY = (load_label_data(devices, dataY_folder, index="timestamp").reindex(devices, axis=1)
-             .resample(RESAMPLING_RATE).median()
-             )
 
-    dataX, dataY, index = create_dataset(dataset_X=dataX_scaled.loc[:, "smartMeter"],
-                                         dataset_Y=dataY)
+    dataX, dataY, index = get_multilabeling_dataset([dataX_folder], [dataY_folder], devices)
 
     val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
     val_dataX = load_csv_from_folder(val_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
@@ -195,7 +183,34 @@ def get_datasets_from_remote():
     )
 
 
+def get_multilabeling_dataset(data_x_folders: list[str], data_y_folders: list[str], devices: list[str]):
+    data_X = []
+
+    for data_x_folder in data_x_folders:
+        data_X.append(load_csv_from_folder(data_x_folder, index="timestamp").resample(RESAMPLING_RATE).mean())
+
+    dataX = pd.concat(data_X, axis=0, ignore_index=False)
+
+    min_max_scaler = MinMaxScaler()
+    dataX_scaled = pd.DataFrame(
+        min_max_scaler.fit_transform(dataX))
+    dataX_scaled.index = dataX.index
+    dataX_scaled.columns = dataX.columns
+
+    data_Y = []
+
+    for data_y_folder in data_y_folders:
+        data_Y.append(
+            load_label_data(devices, data_y_folder, index="timestamp").reindex(devices, axis=1)
+            .resample(RESAMPLING_RATE).median()
+        )
+
+    dataY = pd.concat(data_Y, axis=0, ignore_index=False)
+
+    return create_dataset(dataset_X=dataX_scaled.loc[:, "smartMeter"], dataset_Y=dataY)
+
+
 if __name__ == '__main__':
     # init_test()
-    start_task()
-    # get_datasets_from_remote()
+    # start_task()
+    get_datasets_from_remote()

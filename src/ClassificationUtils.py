@@ -113,6 +113,7 @@ def create_multilabeling_model(number_devices: int):
     model.add(Dense(number_devices, activation='sigmoid'))
     return model
 
+
 def create_dataset(dataset_X, dataset_Y, window_size=WINDOW_SIZE):
     gap = int((window_size-1)/2)
     dataX, dataY = [], []
