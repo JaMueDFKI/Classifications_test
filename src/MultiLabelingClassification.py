@@ -48,6 +48,8 @@ def start_task():
     dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
 
+    min_max_scaler = MinMaxScaler()
+
     dataX, dataY, index = get_multilabeling_dataset([dataX_folder], [dataY_folder], devices)
 
     val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
@@ -212,5 +214,5 @@ def get_multilabeling_dataset(data_x_folders: list[str], data_y_folders: list[st
 
 if __name__ == '__main__':
     # init_test()
-    # start_task()
-    get_datasets_from_remote()
+    start_task()
+    # get_datasets_from_remote()
