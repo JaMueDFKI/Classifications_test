@@ -46,11 +46,13 @@ def start_task():
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
     dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
+    data_X_folder1 = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
+    dataY_folder_1 = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
 
     min_max_scaler = MinMaxScaler()
 
-    dataX, dataY, index = get_multilabeling_dataset([dataX_folder], [dataY_folder], devices)
+    dataX, dataY, index = get_multilabeling_dataset([dataX_folder, data_X_folder1], [dataY_folder, dataY_folder_1], devices)
 
     val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
     val_dataX = load_csv_from_folder(val_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
