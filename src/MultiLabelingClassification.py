@@ -45,19 +45,26 @@ def start_task():
     devices = get_all_devices(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
-    dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
-    data_X_folder1 = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
-    dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
-    dataY_folder_1 = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
+    week_counter = 0
+    data_X_folders = []
+    data_Y_folders = []
+
+    while week_counter < 13:
+        data_X_folders.append(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week" + str(week_counter))
+        data_Y_folders.append(dataset_path_databases + "/TimeDataWeeks/Active_phases/Week" + str(week_counter))
+        week_counter += 1
+
+    # dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
+    # dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
 
     min_max_scaler = MinMaxScaler()
 
-    dataX, dataY, index = get_multilabeling_dataset([dataX_folder, data_X_folder1], [dataY_folder, dataY_folder_1], devices)
+    dataX, dataY, index = get_multilabeling_dataset(data_X_folders, data_Y_folders, devices)
 
-    val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
-    val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
+    # val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
+    # val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
 
-    val_dataX, val_dataY, val_index = get_multilabeling_dataset([val_dataX_folder], [val_dataY_folder], devices)
+    # val_dataX, val_dataY, val_index = get_multilabeling_dataset([val_dataX_folder], [val_dataY_folder], devices)
 
     model = create_multilabeling_model(len(devices))
 
@@ -82,14 +89,22 @@ def start_task():
 
     print("Start training ")
 
-    training_results = model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
+    training_results = model.fit(x=dataX, y=dataY, epochs=10, # validation_data=(val_dataX, val_dataY),
                                  callbacks=[tensorboard_callback, csv_callback])
     print(training_results)
 
-    test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
-    test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
+    # test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
+    # test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
 
-    test_dataX, test_dataY, test_index = get_multilabeling_dataset([test_dataX_folder], [test_dataY_folder], devices)
+    test_data_X_folders = []
+    test_data_Y_folders = []
+
+    while week_counter < 26:
+        data_X_folders.append(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week" + str(week_counter))
+        data_Y_folders.append(dataset_path_databases + "/TimeDataWeeks/Active_phases/Week" + str(week_counter))
+        week_counter += 1
+
+    test_dataX, test_dataY, test_index = get_multilabeling_dataset(test_data_X_folders, test_data_Y_folders, devices)
 
     logdir = (dataset_path_results + "/MultiLabelingClassification/test/" + time_test_started)
 
