@@ -55,20 +55,10 @@ def start_task():
     dataX, dataY, index = get_multilabeling_dataset([dataX_folder, data_X_folder1], [dataY_folder, dataY_folder_1], devices)
 
     val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
-    val_dataX = load_csv_from_folder(val_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
-
-    val_dataX_scaled = pd.DataFrame(
-        min_max_scaler.fit_transform(val_dataX))
-    val_dataX_scaled.index = val_dataX.index
-    val_dataX_scaled.columns = val_dataX.columns
-
     val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
-    val_dataY = (load_label_data(devices, val_dataY_folder, index="timestamp").reindex(devices, axis=1)
-                 .resample(RESAMPLING_RATE).median()
-                 )
 
-    val_dataX, val_dataY, val_index = create_dataset(dataset_X=val_dataX_scaled.loc[:, "smartMeter"],
-                                                     dataset_Y=val_dataY)
+    val_dataX, val_dataY, val_index = get_multilabeling_dataset([val_dataX_folder], [val_dataY_folder], devices)
+
     model = create_multilabeling_model(len(devices))
 
     device_pointer = 0
@@ -97,20 +87,9 @@ def start_task():
     print(training_results)
 
     test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
-    test_dataX = load_csv_from_folder(test_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
-
-    test_dataX_scaled = pd.DataFrame(
-        min_max_scaler.fit_transform(test_dataX))
-    test_dataX_scaled.index = test_dataX.index
-    test_dataX_scaled.columns = test_dataX.columns
-
     test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
-    test_dataY = (load_label_data(devices, test_dataY_folder, index="timestamp").reindex(devices, axis=1)
-                  .resample(RESAMPLING_RATE).median()
-                  )
 
-    test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX_scaled.loc[:, "smartMeter"],
-                                                        dataset_Y=test_dataY)
+    test_dataX, test_dataY, test_index = get_multilabeling_dataset([test_dataX_folder], [test_dataY_folder], devices)
 
     logdir = (dataset_path_results + "/MultiLabelingClassification/test/" + time_test_started)
 
