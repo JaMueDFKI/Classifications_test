@@ -209,6 +209,6 @@ def get_multilabeling_dataset(data_x_folders: list[str], data_y_folders: list[st
 
 
 if __name__ == '__main__':
-    # init_test()
-    start_task()
+    init_test()
+    # start_task()
     # get_datasets_from_remote()
