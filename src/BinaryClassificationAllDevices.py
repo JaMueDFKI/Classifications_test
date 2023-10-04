@@ -2,9 +2,11 @@ import os
 from datetime import datetime
 
 import clearml
+import pandas as pd
 from clearml import Dataset, Task
 import tensorflow as tf
 from keras.callbacks import TensorBoard
+from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.metrics import Recall, Precision
 from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.callbacks import CSVLogger
@@ -49,23 +51,28 @@ def start_task():
     fake_model_training(dataset_path_results, time_test_started)
 
     for device in devices:
-        dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
-        dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
+        # dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
+        # dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
 
-        dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
-        dataY = load_label_data(devices, dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+        week_counter = 0
+        data_X_folders = []
+        data_Y_folders = []
 
-        dataX, dataY, index = create_dataset(dataset_X=dataX.loc[:, "smartMeter"],
-                                             dataset_Y=dataY.loc[:, device])
+        while week_counter < 13:
+            data_X_folders.append(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week" + str(week_counter))
+            data_Y_folders.append(dataset_path_databases + "/TimeDataWeeks/Active_phases/Week" + str(week_counter))
+            week_counter += 1
 
-        val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
-        val_dataX = load_csv_from_folder(val_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
+        dataX, dataY, index = get_binary_dataset(data_X_folders, data_Y_folders,
+                                                 devices, device)
 
-        val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
-        val_dataY = load_label_data(devices, val_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+        # val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
+        # val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
 
-        val_dataX, val_dataY, val_index = create_dataset(dataset_X=val_dataX.loc[:, "smartMeter"],
-                                                         dataset_Y=val_dataY.loc[:, device])
+        # val_dataX, val_dataY, val_index = get_binary_dataset([val_dataX_folder],
+        #                                                     [val_dataY_folder],
+        #                                                     devices, device)
+
         model = create_binary_model()
 
         model.compile(loss="binary_crossentropy", optimizer="adam",
@@ -85,18 +92,26 @@ def start_task():
 
         print("Start training " + device)
 
-        training_results = model.fit(x=dataX, y=dataY, epochs=10, validation_data=(val_dataX, val_dataY),
+        training_results = model.fit(x=dataX, y=dataY, epochs=10, # validation_data=(val_dataX, val_dataY),
                                      callbacks=[tensorboard_callback, csv_callback])
         print(training_results)
 
-        test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
-        test_dataX = load_csv_from_folder(test_dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
+        # test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
 
-        test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
-        test_dataY = load_label_data(devices, test_dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()
+        # test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
 
-        test_dataX, test_dataY, test_index = create_dataset(dataset_X=test_dataX.loc[:, "smartMeter"],
-                                                            dataset_Y=test_dataY.loc[:, device])
+        test_data_X_folders = []
+        test_data_Y_folders = []
+
+        while week_counter < 26:
+            test_data_X_folders.append(
+                dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week" + str(week_counter))
+            test_data_Y_folders.append(dataset_path_databases + "/TimeDataWeeks/Active_phases/Week" + str(week_counter))
+            week_counter += 1
+
+        test_dataX, test_dataY, test_index = get_binary_dataset(test_data_X_folders,
+                                                                test_data_Y_folders,
+                                                                devices, device)
 
         logdir = (dataset_path_results + "/BinaryClassificationAllDevices/test/" + time_test_started)
 
@@ -116,6 +131,7 @@ def start_task():
 
         models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
         model.save_weights(models_dir + "/BinaryClassificationAllDevices/model_" + device + ".h5", overwrite=True)
+
 
     project_root = os.path.dirname(os.path.abspath(os.path.curdir))
 
@@ -206,10 +222,38 @@ def fake_model_training(dataset_path_results, time_test_started):
     fake_model.evaluate(x=[1], y=[1], callbacks=[tensorboard_callback])
 
 
+def get_binary_dataset(data_x_folders: list[str], data_y_folders: list[str],
+                       devices: list[str], device: str):
+    data_X = []
+
+    for data_x_folder in data_x_folders:
+        data_X.append(load_csv_from_folder(data_x_folder, index="timestamp").resample(RESAMPLING_RATE).mean())
+
+    dataX = pd.concat(data_X, axis=0, ignore_index=False)
+
+    min_max_scaler = MinMaxScaler()
+    dataX_scaled = pd.DataFrame(
+        min_max_scaler.fit_transform(dataX))
+    dataX_scaled.index = dataX.index
+    dataX_scaled.columns = dataX.columns
+
+    data_Y = []
+
+    for data_y_folder in data_y_folders:
+        data_Y.append(
+            load_label_data(devices, data_y_folder, index="timestamp")
+            .resample(RESAMPLING_RATE).median()
+        )
+
+    dataY = pd.concat(data_Y, axis=0, ignore_index=False)
+
+    return create_dataset(dataset_X=dataX_scaled.loc[:, "smartMeter"], dataset_Y=dataY.loc[:, device])
+
+
 if __name__ == '__main__':
     # init_test()
-    # start_task()
-    get_datasets_from_remote()
+    start_task()
+    # get_datasets_from_remote()
 
 
 
