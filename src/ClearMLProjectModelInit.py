@@ -3,7 +3,7 @@ import os
 from clearml import Dataset
 
 from ClassificationUtils import create_binary_model, create_multiclassing_model, create_multilabeling_model
-from DataUtils import get_all_devices
+from DataUtils import get_all_devices_file
 
 
 def init():
@@ -40,8 +40,8 @@ def init_model(filepath: str):
 
 
 def init_binary_all_devices(folder: str):
-    devices = get_all_devices(os.path.dirname(os.path.abspath(os.path.curdir))
-                              + "/Resources/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
+    devices = get_all_devices_file(os.path.dirname(os.path.abspath(os.path.curdir))
+                                   + "/Resources/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
 
     for device in devices:
         model = create_binary_model()
@@ -55,8 +55,8 @@ def init_binary_all_devices(folder: str):
 
 
 def init_multiclassing(filepath: str):
-    devices = get_all_devices(os.path.dirname(os.path.abspath(os.path.curdir))
-                              + "/Resources/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
+    devices = get_all_devices_file(os.path.dirname(os.path.abspath(os.path.curdir))
+                                   + "/Resources/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
     model = create_multiclassing_model(len(devices))
     model.save_weights(filepath)
 
@@ -68,8 +68,8 @@ def init_multiclassing(filepath: str):
 
 
 def init_multilabeling(filepath: str):
-    devices = get_all_devices(os.path.dirname(os.path.abspath(os.path.curdir))
-                              + "/Resources/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
+    devices = get_all_devices_file(os.path.dirname(os.path.abspath(os.path.curdir))
+                                   + "/Resources/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
     model = create_multilabeling_model(len(devices))
     model.save_weights(filepath)
 

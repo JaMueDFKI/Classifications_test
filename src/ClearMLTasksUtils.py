@@ -12,7 +12,7 @@ from ClassificationUtils import load_csv_from_folder, create_dataset, create_bin
 
 from tensorflow_addons.metrics import F1Score
 
-from DataUtils import get_all_devices
+from DataUtils import get_all_devices_file
 
 RESAMPLING_RATE = "10s"
 
@@ -43,7 +43,7 @@ def start_task():
     dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
     dataX = load_csv_from_folder(dataX_folder, index="timestamp").resample(RESAMPLING_RATE).mean()
 
-    devices = get_all_devices(dataX_folder + "/2022-12-05.csv")
+    devices = get_all_devices_file(dataX_folder + "/2022-12-05.csv")
 
     dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
     dataY = load_label_data(devices, dataY_folder, index="timestamp").resample(RESAMPLING_RATE).median()

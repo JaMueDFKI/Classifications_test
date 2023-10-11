@@ -14,7 +14,7 @@ from ClassificationUtils import load_csv_from_folder, create_dataset, load_label
     create_multiclassing_model, add_idle
 
 from ClearMLProjectModelInit import init_multiclassing
-from DataUtils import get_all_devices
+from DataUtils import get_all_devices_file
 
 RESAMPLING_RATE = "10s"
 
@@ -42,7 +42,7 @@ def start_task():
         os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models", True
     )
 
-    devices = get_all_devices(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
+    devices = get_all_devices_file(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
 

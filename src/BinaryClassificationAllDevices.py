@@ -17,7 +17,7 @@ from ClassificationUtils import load_csv_from_folder, create_dataset, create_bin
 from tensorflow_addons.metrics import F1Score
 
 from ClearMLProjectModelInit import init_binary_all_devices
-from DataUtils import get_all_devices
+from DataUtils import get_all_devices_file, get_all_devices_data
 
 RESAMPLING_RATE = "10s"
 
@@ -45,7 +45,7 @@ def start_task():
         os.path.dirname(os.path.abspath(os.path.curdir)) + "Models/", True
     )
 
-    devices = get_all_devices(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
+    devices = get_all_devices_data(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData")
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
     fake_model_training(dataset_path_results, time_test_started)
