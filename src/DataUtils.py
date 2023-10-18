@@ -1,5 +1,6 @@
 import glob
 import os
+import re
 import shutil
 
 import pandas as pd
@@ -79,56 +80,120 @@ def exclude_unused_devices(src_folder, dst_folder):
     active_phases_rel_path = f"{src_folder}/Active_phases/*"
 
     series_path = os.path.join(script_dir, series_rel_path)
-    all_weeks = glob.glob(series_path)
+    all_weeks = sorted(glob.glob(series_path), key=lambda s: int(re.search(r'\d+', s).group()))
 
     # collect data of series
-    series_data = [[]] * len(all_weeks)
-    series_file_names = [[]] * len(all_weeks)
+    series_data = [[] for i in range(len(all_weeks))]
+    series_file_names = [[] for i in range(len(all_weeks))]
 
     for w in range(len(all_weeks)):
         files = glob.glob(all_weeks[w] + "/*")
-        series_data_week = series_data[w]
 
         for file in files:
-            series_data_week.extend(pd.read_csv(file))
-            (series_file_names[w]).append(file)
+            series_data[w].append(pd.read_csv(file, index_col="timestamp"))
+            series_file_names[w].append(os.path.basename(file))
 
     devices = get_all_devices_data(series_path[0:-1])
 
-    # check whether devices are used
+    # collect data of active phases
+    active_phases_path = os.path.join(script_dir, active_phases_rel_path)
+    all_weeks_active_phases = sorted(glob.glob(active_phases_path), key=lambda s: int(re.search(r'\d+', s).group()))
 
+    active_phases_data = [[] for i in range(len(all_weeks_active_phases))]
+    active_phases_file_names = [[] for i in range(len(all_weeks_active_phases))]
+
+    for w in range(len(all_weeks_active_phases)):
+        files = glob.glob(all_weeks_active_phases[w] + "/*")
+
+        for file in files:
+            active_phases_data[w].append(pd.read_csv(file, index_col="timestamp"))
+            active_phases_file_names[w].append(os.path.basename(file))
+
+    # check whether devices are used
     device_used = [False] * len(devices)
 
-    for w in range(len(series_data)):
-        for f in range(len(series_data[w])):
-            data = series_data[w][f]
-            devices_of_data = data.columns
-            devices_of_data.remove("timestamp")
-            devices_of_data.remove("smartMeter")
+    for w in range(len(active_phases_data)):
+        for f in range(len(active_phases_data[w])):
+            # data = series_data[w][f]
+            data = active_phases_data[w][f]
+            devices_of_data = list(data.columns)
+            # devices_of_data.remove("timestamp")
+            # devices_of_data.remove("smartMeter")
 
             for d in range(len(devices)):
                 if devices[d] in devices_of_data:
-                    if not (data[devices[d]] == 0).all():
+                    if not ((data[devices[d]] == 0).all()):
                         device_used[d] = True
 
     # delete unused devices out of dataframes
     for w in range(len(series_data)):
         for f in range(len(series_data[w])):
             data = series_data[w][f]
-            devices_of_data = data.columns
-            devices_of_data.remove("timestamp")
+            devices_of_data = list(data.columns)
+            # devices_of_data.remove("timestamp")
             devices_of_data.remove("smartMeter")
+
+            a_p_data = active_phases_data[w][f]
+            active_phases_devices = list(a_p_data.columns)
+            # active_phases_devices.remove("timestamp")
 
             for d in range(len(devices)):
                 if devices[d] in devices_of_data:
                     if not device_used[d]:
-                        data.drop(columns=[devices[d]])
+                        data.drop(columns=[devices[d]], inplace=True)
+
+                if devices[d] in active_phases_devices:
+                    if not device_used[d]:
+                        a_p_data.drop(columns=[devices[d]], inplace=True)
 
     # save modified TimeSeries data
     dst_series_path = os.path.join(script_dir, f"{dst_folder}/TimeSeriesData")
 
     if not os.path.exists(dst_series_path):
         os.mkdir(dst_series_path)
+
+    for w in range(len(series_data)):
+        filepath_week = dst_series_path + "/Week" + str(w)
+
+        if not os.path.exists(filepath_week):
+            os.mkdir(filepath_week)
+
+        for f in range(len(series_data[w])):
+            series_data[w][f].to_csv(filepath_week + "/" + series_file_names[w][f])
+
+    # save modified active phases data
+    dst_active_phases_path = os.path.join(script_dir, f"{dst_folder}/Active_phases")
+
+    if not os.path.exists(dst_active_phases_path):
+        os.mkdir(dst_active_phases_path)
+
+    for w in range(len(active_phases_data)):
+        filepath_week = dst_active_phases_path + "/Week" + str(w)
+
+        if not os.path.exists(filepath_week):
+            os.mkdir(filepath_week)
+
+        for f in range(len(active_phases_data[w])):
+            active_phases_data[w][f].to_csv(filepath_week + "/" + active_phases_file_names[w][f])
+
+    # copy files from ActionSequences src to ActionSequences dst
+    action_sequence_path = os.path.join(script_dir, action_rel_seq_path)
+    all_weeks_action_sequences = sorted(glob.glob(action_sequence_path), key=lambda s: int(re.search(r'\d+', s).group()))
+
+    dst_action_sequences_path = os.path.join(script_dir, f"{dst_folder}/ActionSeq")
+
+    if not os.path.exists(dst_action_sequences_path):
+        os.mkdir(dst_action_sequences_path)
+
+    for w in range(len(all_weeks_action_sequences)):
+        files = glob.glob(all_weeks_action_sequences[w] + "/*")
+        filepath_week = dst_action_sequences_path + "/Week" + str(w)
+
+        if not os.path.exists(filepath_week):
+            os.mkdir(filepath_week)
+
+        for file in files:
+            shutil.copy2(file, filepath_week)
 
 
 if __name__ == '__main__':
@@ -141,6 +206,6 @@ if __name__ == '__main__':
     #             + "\\Resources\\TimeSeriesData\\TimeSeriesData\\2022-12-05.csv")
     # print(get_all_devices_file(filepath))
     exclude_unused_devices(os.path.dirname(os.path.abspath(os.path.curdir)) + "\\Resources\\TimeDataWeeks",
-                           "")
+                           os.path.dirname(os.path.abspath(os.path.curdir)) + "\\Resources\\TimeDataWeeksOnlyUsedDevices")
     # print(get_all_devices_data(os.path.dirname(os.path.abspath(os.path.curdir)) + "/Resources/TimeDataWeeks/TimeSeriesData"))
 
