@@ -148,7 +148,9 @@ def start_task():
 
 def init_test():
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
-    init_multilabeling(models_dir + "/MultiLabelingClassificationModel/model.h5")
+    init_multilabeling(models_dir + "/MultiLabelingClassificationModel/model.h5",
+                       os.path.dirname(os.path.abspath(os.path.curdir))
+                       + '/Resources/TimeDataWeeksOnlyUsedDevices/TimeSeriesData')
 
     dataset = Dataset.create(dataset_project='MultiLabeling_Classification_Test', dataset_name="DataBases")
     dataset.add_files(path=os.path.dirname(os.path.abspath(os.path.curdir)) + '/Resources')
