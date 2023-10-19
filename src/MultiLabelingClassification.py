@@ -50,8 +50,10 @@ def start_task():
     data_Y_folders = []
 
     while week_counter < 13:
-        data_X_folders.append(dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
-        data_Y_folders.append(dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
+        data_X_folders.append(
+            dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
+        data_Y_folders.append(
+            dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
         week_counter += 1
 
     # dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
@@ -100,8 +102,10 @@ def start_task():
     test_data_Y_folders = []
 
     while week_counter < 26:
-        test_data_X_folders.append(dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
-        test_data_Y_folders.append(dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
+        test_data_X_folders.append(
+            dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
+        test_data_Y_folders.append(
+            dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
         week_counter += 1
 
     test_dataX, test_dataY, test_index = get_multilabeling_dataset(test_data_X_folders, test_data_Y_folders, devices)
@@ -211,6 +215,6 @@ def get_multilabeling_dataset(data_x_folders: list[str], data_y_folders: list[st
 
 
 if __name__ == '__main__':
-    init_test()
-    # start_task()
+    # init_test()
+    start_task()
     # get_datasets_from_remote()

@@ -45,7 +45,7 @@ def start_task():
         os.path.dirname(os.path.abspath(os.path.curdir)) + "Models/", True
     )
 
-    devices = get_all_devices_data(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData")
+    devices = get_all_devices_data(dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData")
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
     fake_model_training(dataset_path_results, time_test_started)
@@ -59,8 +59,10 @@ def start_task():
         data_Y_folders = []
 
         while week_counter < 13:
-            data_X_folders.append(dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week" + str(week_counter))
-            data_Y_folders.append(dataset_path_databases + "/TimeDataWeeks/Active_phases/Week" + str(week_counter))
+            data_X_folders.append(
+                dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
+            data_Y_folders.append(
+                dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
             week_counter += 1
 
         dataX, dataY, index = get_binary_dataset(data_X_folders, data_Y_folders,
@@ -105,8 +107,9 @@ def start_task():
 
         while week_counter < 26:
             test_data_X_folders.append(
-                dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week" + str(week_counter))
-            test_data_Y_folders.append(dataset_path_databases + "/TimeDataWeeks/Active_phases/Week" + str(week_counter))
+                dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
+            test_data_Y_folders.append(
+                dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
             week_counter += 1
 
         test_dataX, test_dataY, test_index = get_binary_dataset(test_data_X_folders,
@@ -132,7 +135,6 @@ def start_task():
         models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
         model.save_weights(models_dir + "/BinaryClassificationAllDevices/model_" + device + ".h5", overwrite=True)
 
-
     project_root = os.path.dirname(os.path.abspath(os.path.curdir))
 
     # save the Results of the Model for experiment_number
@@ -156,7 +158,9 @@ def start_task():
 
 def init_test():
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
-    init_binary_all_devices(models_dir + "/BinaryClassificationAllDevices")
+    init_binary_all_devices(models_dir + "/BinaryClassificationAllDevices",
+                            os.path.dirname(os.path.abspath(os.path.curdir))
+                            + '/Resources/TimeDataWeeksOnlyUsedDevices/TimeSeriesData')
 
     dataset = Dataset.create(dataset_project='Binary_ClassificationAllDevices_Test', dataset_name="DataBases")
     dataset.add_files(path=os.path.dirname(os.path.abspath(os.path.curdir)) + '/Resources')
@@ -251,8 +255,8 @@ def get_binary_dataset(data_x_folders: list[str], data_y_folders: list[str],
 
 
 if __name__ == '__main__':
-    # init_test()
-    start_task()
+    init_test()
+    # start_task()
     # get_datasets_from_remote()
 
 

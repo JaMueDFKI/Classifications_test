@@ -39,9 +39,8 @@ def init_model(filepath: str):
     dataset.finalize()
 
 
-def init_binary_all_devices(folder: str):
-    devices = get_all_devices_file(os.path.dirname(os.path.abspath(os.path.curdir))
-                                   + "/Resources/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
+def init_binary_all_devices(folder: str, data_filepath: str):
+    devices = get_all_devices_data(data_filepath)
 
     for device in devices:
         model = create_binary_model()
