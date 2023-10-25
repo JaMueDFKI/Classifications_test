@@ -68,6 +68,18 @@ def start_task():
 
     # val_dataX, val_dataY, val_index = get_multilabeling_dataset([val_dataX_folder], [val_dataY_folder], devices)
 
+    val_data_X_folders = []
+    val_data_Y_folders = []
+
+    while week_counter < 26:
+        val_data_X_folders.append(
+            dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
+        val_data_Y_folders.append(
+            dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
+        week_counter += 1
+
+    val_dataX, val_dataY, val_index = get_multilabeling_dataset(val_data_X_folders, val_data_Y_folders, devices)
+
     model = create_multilabeling_model(len(devices))
 
     device_pointer = 0
@@ -91,40 +103,40 @@ def start_task():
 
     print("Start training ")
 
-    training_results = model.fit(x=dataX, y=dataY, epochs=10, # validation_data=(val_dataX, val_dataY),
+    training_results = model.fit(x=dataX, y=dataY, epochs=50, validation_data=(val_dataX, val_dataY),
                                  callbacks=[tensorboard_callback, csv_callback])
     print(training_results)
 
     # test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
     # test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
 
-    test_data_X_folders = []
-    test_data_Y_folders = []
+    # test_data_X_folders = []
+    # test_data_Y_folders = []
 
-    while week_counter < 26:
-        test_data_X_folders.append(
-            dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
-        test_data_Y_folders.append(
-            dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
-        week_counter += 1
+    # while week_counter < 26:
+    #     test_data_X_folders.append(
+    #         dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
+    #     test_data_Y_folders.append(
+    #         dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
+    #     week_counter += 1
 
-    test_dataX, test_dataY, test_index = get_multilabeling_dataset(test_data_X_folders, test_data_Y_folders, devices)
+    # test_dataX, test_dataY, test_index = get_multilabeling_dataset(test_data_X_folders, test_data_Y_folders, devices)
 
-    logdir = (dataset_path_results + "/MultiLabelingClassification/test/" + time_test_started)
+    # logdir = (dataset_path_results + "/MultiLabelingClassification/test/" + time_test_started)
 
-    if not os.path.exists(logdir):
-        os.mkdir(logdir)
+    # if not os.path.exists(logdir):
+    #     os.mkdir(logdir)
 
-    tensorboard_callback = TensorBoard(log_dir=logdir)
-    csv_callback = CSVLogger(logdir + "/results.csv")
+    # tensorboard_callback = TensorBoard(log_dir=logdir)
+    # csv_callback = CSVLogger(logdir + "/results.csv")
 
-    csv_callback.on_test_begin = csv_callback.on_train_begin
-    csv_callback.on_test_batch_end = csv_callback.on_epoch_end
-    csv_callback.on_test_end = csv_callback.on_train_end
+    # csv_callback.on_test_begin = csv_callback.on_train_begin
+    # csv_callback.on_test_batch_end = csv_callback.on_epoch_end
+    # csv_callback.on_test_end = csv_callback.on_train_end
 
-    print("Start Evaluation ")
+    # print("Start Evaluation ")
 
-    model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback, csv_callback])
+    # model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback, csv_callback])
 
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
     model.save_weights(models_dir + "/MultiLabelingClassificationModel/model.h5", overwrite=True)
@@ -216,5 +228,5 @@ def get_multilabeling_dataset(data_x_folders: list[str], data_y_folders: list[st
 
 if __name__ == '__main__':
     # init_test()
-    start_task()
-    # get_datasets_from_remote()
+    # start_task()
+    get_datasets_from_remote()

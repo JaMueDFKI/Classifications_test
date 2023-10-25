@@ -75,6 +75,18 @@ def start_task():
         #                                                     [val_dataY_folder],
         #                                                     devices, device)
 
+        val_data_X_folders = []
+        val_data_Y_folders = []
+
+        while week_counter < 26:
+            val_data_X_folders.append(
+                dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
+            val_data_Y_folders.append(
+                dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
+            week_counter += 1
+
+        val_dataX, val_dataY, val_index = get_binary_dataset(val_data_X_folders, val_data_Y_folders, devices, device)
+
         model = create_binary_model()
 
         model.compile(loss="binary_crossentropy", optimizer="adam",
@@ -94,43 +106,43 @@ def start_task():
 
         print("Start training " + device)
 
-        training_results = model.fit(x=dataX, y=dataY, epochs=10, # validation_data=(val_dataX, val_dataY),
+        training_results = model.fit(x=dataX, y=dataY, epochs=50, validation_data=(val_dataX, val_dataY),
                                      callbacks=[tensorboard_callback, csv_callback])
-        print(training_results)
+        # print(training_results)
 
         # test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
 
         # test_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week2"
 
-        test_data_X_folders = []
-        test_data_Y_folders = []
+        # test_data_X_folders = []
+        # test_data_Y_folders = []
 
-        while week_counter < 26:
-            test_data_X_folders.append(
-                dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
-            test_data_Y_folders.append(
-                dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
-            week_counter += 1
+        # while week_counter < 26:
+        #     test_data_X_folders.append(
+        #         dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData/Week" + str(week_counter))
+        #     test_data_Y_folders.append(
+        #         dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
+        #     week_counter += 1
 
-        test_dataX, test_dataY, test_index = get_binary_dataset(test_data_X_folders,
-                                                                test_data_Y_folders,
-                                                                devices, device)
+        # test_dataX, test_dataY, test_index = get_binary_dataset(test_data_X_folders,
+        #                                                         test_data_Y_folders,
+        #                                                         devices, device)
 
-        logdir = (dataset_path_results + "/BinaryClassificationAllDevices/test/" + time_test_started)
+        # logdir = (dataset_path_results + "/BinaryClassificationAllDevices/test/" + time_test_started)
 
-        if not os.path.exists(logdir):
-            os.mkdir(logdir)
+        # if not os.path.exists(logdir):
+        #     os.mkdir(logdir)
 
-        tensorboard_callback = TensorBoard(log_dir=logdir + "/" + device)
-        csv_callback = CSVLogger(logdir + "/results_" + device + ".csv")
+        # tensorboard_callback = TensorBoard(log_dir=logdir + "/" + device)
+        # csv_callback = CSVLogger(logdir + "/results_" + device + ".csv")
 
-        csv_callback.on_test_begin = csv_callback.on_train_begin
-        csv_callback.on_test_batch_end = csv_callback.on_epoch_end
-        csv_callback.on_test_end = csv_callback.on_train_end
+        # csv_callback.on_test_begin = csv_callback.on_train_begin
+        # csv_callback.on_test_batch_end = csv_callback.on_epoch_end
+        # csv_callback.on_test_end = csv_callback.on_train_end
 
-        print("Start Evaluation " + device)
+        # print("Start Evaluation " + device)
 
-        model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback, csv_callback])
+        # model.evaluate(test_dataX, test_dataY, callbacks=[tensorboard_callback, csv_callback])
 
         models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
         model.save_weights(models_dir + "/BinaryClassificationAllDevices/model_" + device + ".h5", overwrite=True)
@@ -256,8 +268,8 @@ def get_binary_dataset(data_x_folders: list[str], data_y_folders: list[str],
 
 if __name__ == '__main__':
     # init_test()
-    start_task()
-    # get_datasets_from_remote()
+    # start_task()
+    get_datasets_from_remote()
 
 
 
