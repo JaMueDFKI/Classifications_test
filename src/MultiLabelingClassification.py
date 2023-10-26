@@ -5,6 +5,7 @@ import clearml
 import pandas as pd
 from clearml import Dataset, Task
 import tensorflow as tf
+from keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 from keras.callbacks import TensorBoard
 from tensorflow.keras.metrics import Recall, Precision
@@ -89,7 +90,9 @@ def start_task():
         metrics.append(Precision(name="precision_" + device, class_id=device_pointer))
         device_pointer += 1
 
-    model.compile(loss="binary_crossentropy", optimizer="adam", metrics=metrics)
+    adam_opt = Adam(learning_rate=0.0001)
+
+    model.compile(loss="binary_crossentropy", optimizer=adam_opt, metrics=metrics)
 
     model.load_weights(models_path + "/MultiLabelingClassificationModel/model.h5")
 

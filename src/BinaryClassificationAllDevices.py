@@ -6,6 +6,7 @@ import pandas as pd
 from clearml import Dataset, Task
 import tensorflow as tf
 from keras.callbacks import TensorBoard
+from keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.metrics import Recall, Precision
 from tensorflow.python.keras import Sequential
@@ -89,7 +90,9 @@ def start_task():
 
         model = create_binary_model()
 
-        model.compile(loss="binary_crossentropy", optimizer="adam",
+        adam_opt = Adam(learning_rate=0.0001)
+
+        model.compile(loss="binary_crossentropy", optimizer=adam_opt,
                       metrics=["accuracy",
                                Recall(name="recall"),
                                Precision(name="precision")])
