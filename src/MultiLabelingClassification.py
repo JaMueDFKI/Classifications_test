@@ -22,7 +22,7 @@ RESAMPLING_RATE = "10s"
 
 def start_task():
     task = Task.init(project_name='MultiLabeling_Classification_Test',
-                     task_name=f'Experiment Test MultiLabeling')
+                     task_name=f'Experiment Test MultiLabeling (w\\ Dropout, lr=0.0001)')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases

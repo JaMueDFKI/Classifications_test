@@ -25,7 +25,7 @@ RESAMPLING_RATE = "10s"
 
 def start_task():
     task = Task.init(project_name='Binary_ClassificationAllDevices_Test',
-                     task_name=f'Experiment Test Binary All Devices')
+                     task_name=f'Experiment Test Binary All Devices (w\\ Dropout, lr=0.0001)')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases

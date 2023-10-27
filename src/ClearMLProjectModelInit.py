@@ -82,10 +82,10 @@ if __name__ == '__main__':
     # init()
     models_dir = os.path.dirname(os.path.abspath(os.path.curdir)) + "/Models"
     # init_model(models_dir + "/BinaryClassificationModel/model.h5")
-    # init_binary_all_devices(models_dir + "/BinaryClassificationAllDevices",
-    #                        os.path.dirname(os.path.abspath(os.path.curdir))
-    #                         + '/Resources/TimeDataWeeksOnlyUsedDevices/TimeSeriesData')
+    init_binary_all_devices(models_dir + "/BinaryClassificationAllDevices",
+                            os.path.dirname(os.path.abspath(os.path.curdir))
+                            + '/Resources/TimeDataWeeksOnlyUsedDevices/TimeSeriesData')
     # init_multiclassing(models_dir + "/MultiClassingClassification/model.h5")
-    init_multilabeling(models_dir + "/MultiLabelingClassificationModel/model.h5",
-                       os.path.dirname(os.path.abspath(os.path.curdir))
-                       + '/Resources/TimeDataWeeksOnlyUsedDevices/TimeSeriesData')
+    # init_multilabeling(models_dir + "/MultiLabelingClassificationModel/model.h5",
+    #                    os.path.dirname(os.path.abspath(os.path.curdir))
+    #                    + '/Resources/TimeDataWeeksOnlyUsedDevices/TimeSeriesData')
