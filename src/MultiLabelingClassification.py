@@ -90,7 +90,7 @@ def start_task():
         metrics.append(Precision(name="precision_" + device, class_id=device_pointer))
         device_pointer += 1
 
-    adam_opt = Adam()#learning_rate=0.0001)
+    adam_opt = Adam()  # learning_rate=0.00001)
 
     model.compile(loss="binary_crossentropy", optimizer=adam_opt, metrics=metrics)
 
