@@ -25,7 +25,7 @@ RESAMPLING_RATE = "10s"
 
 def start_task():
     task = Task.init(project_name='Binary_ClassificationAllDevices_Test',
-                     task_name=f'Experiment Test Binary All Devices (w\\ Dropout, lr=0.0001)')
+                     task_name=f'Experiment Test Binary All Devices (w\\ Dropout)')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases
@@ -90,7 +90,7 @@ def start_task():
 
         model = create_binary_model()
 
-        adam_opt = Adam(learning_rate=0.0001)
+        adam_opt = Adam()  # learning_rate=0.0001)
 
         model.compile(loss="binary_crossentropy", optimizer=adam_opt,
                       metrics=["accuracy",
