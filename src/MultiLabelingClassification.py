@@ -17,12 +17,12 @@ from ClassificationUtils import load_csv_from_folder, create_dataset, load_label
 from ClearMLProjectModelInit import init_multilabeling
 from DataUtils import get_all_devices_file, get_all_devices_data
 
-RESAMPLING_RATE = "10s"
+RESAMPLING_RATE = "4s"
 
 
 def start_task():
     task = Task.init(project_name='MultiLabeling_Classification_Test',
-                     task_name=f'Experiment Test MultiLabeling (additional layer, learning_rate=0.0001)')
+                     task_name=f'Experiment Test MultiLabeling (resampling rate=4s)')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases
@@ -90,7 +90,7 @@ def start_task():
         metrics.append(Precision(name="precision_" + device, class_id=device_pointer))
         device_pointer += 1
 
-    adam_opt = Adam(learning_rate=0.0001)
+    adam_opt = Adam()  # learning_rate=0.0001)
 
     model.compile(loss="binary_crossentropy", optimizer=adam_opt, metrics=metrics)
 

@@ -65,7 +65,7 @@ def create_binary_model():
     model.add(Flatten())
     model.add(Dense(1024, activation='relu'))
     # additional fully connected layer
-    model.add(Dense(1024, activation='relu'))
+    # model.add(Dense(1024, activation='relu'))
     # model.add(Dropout(0.5))
     model.add(Dense(1, activation='sigmoid'))
     return model
@@ -113,7 +113,7 @@ def create_multilabeling_model(number_devices: int):
     model.add(Dense(1024, activation='relu'))
     # model.add(Dropout(0.5))
     # additional fully connected layer
-    model.add(Dense(1024, activation='relu'))
+    # model.add(Dense(1024, activation='relu'))
     # number_of_devices
     model.add(Dense(number_devices, activation='sigmoid'))
     return model
