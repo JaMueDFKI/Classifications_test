@@ -66,7 +66,7 @@ def create_binary_model():
     model.add(Dense(1024, activation='relu'))
     # model.add(Dropout(0.5))
     # additional fully connected layer
-    # model.add(Dense(1024, activation='relu'))
+    model.add(Dense(1024, activation='relu'))
     # model.add(Dropout(0.5))
     model.add(Dense(1, activation='sigmoid'))
     return model
