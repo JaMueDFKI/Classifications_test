@@ -20,12 +20,12 @@ from tensorflow_addons.metrics import F1Score
 from ClearMLProjectModelInit import init_binary_all_devices
 from DataUtils import get_all_devices_file, get_all_devices_data
 
-RESAMPLING_RATE = "10s"
+RESAMPLING_RATE = "4s"
 
 
 def start_task():
     task = Task.init(project_name='Binary_ClassificationAllDevices_Test',
-                     task_name=f'Experiment Test Binary All Devices (learning_rate=0.0001, additional layer, w\\ Dropout)')
+                     task_name=f'Experiment Test Binary All Devices (resampling rate= 4s, learning rate = 0.0001)')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases
