@@ -28,9 +28,10 @@ def start_task():
                      task_name=f'Experiment Test Binary All Devices ('
                                f'resampling rate= 4s,'
                                f' activation_function=leaky_relu,'
-                               f' learning_rate=0.0001,'
+                               f' learning_rate=0.0001'  # ,'
                                # f' w\\ Dropout,'
-                               f' additional layer)')
+                               # f' additional layer'
+                               f')')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases
@@ -95,7 +96,7 @@ def start_task():
 
         model = create_binary_model()
 
-        adam_opt = Adam()  # learning_rate=0.0001)
+        adam_opt = Adam(learning_rate=0.0001)
 
         model.compile(loss="binary_crossentropy", optimizer=adam_opt,
                       metrics=["accuracy",
