@@ -24,10 +24,11 @@ def start_task():
     task = Task.init(project_name='MultiLabeling_Classification_Test',
                      task_name=f'Experiment Test MultiLabeling ('
                                f'resampling rate= 4s,'
-                               # f' activation_function=leaky_relu,'
-                               f' learning_rate=0.00001,'
-                               f' w\\ Dropout,'
-                               f' additional layer)')
+                               f' activation_function=leaky_relu'
+                               # f' learning_rate=0.0001,'
+                               # f' w\\ Dropout,'
+                               # f' additional layer'
+                               f')')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases
@@ -95,7 +96,7 @@ def start_task():
         metrics.append(Precision(name="precision_" + device, class_id=device_pointer))
         device_pointer += 1
 
-    adam_opt = Adam(learning_rate=0.00001)
+    adam_opt = Adam() #  learning_rate=0.0001)
 
     model.compile(loss="binary_crossentropy", optimizer=adam_opt, metrics=metrics)
 

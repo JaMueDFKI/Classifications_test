@@ -102,20 +102,20 @@ def create_multilabeling_model(number_devices: int):
     :return: A multilabeling model for number_devices classes.
     """
     model = Sequential()  # add model layers
-    model.add(Conv1D(30, kernel_size=10, activation="relu", strides=1, input_shape=(WINDOW_SIZE, 1)))
-    model.add(Conv1D(30, kernel_size=8, activation="relu", strides=1))
-    model.add(Conv1D(40, kernel_size=6, activation="relu", strides=1))
-    model.add(Dropout(0.1))
-    model.add(Conv1D(50, kernel_size=5, activation="relu", strides=1))
-    model.add(Dropout(0.2))
-    model.add(Conv1D(50, kernel_size=5, activation="relu", strides=1))
-    model.add(Dropout(0.4))
+    model.add(Conv1D(30, kernel_size=10, activation='leaky_relu', strides=1, input_shape=(WINDOW_SIZE, 1)))
+    model.add(Conv1D(30, kernel_size=8, activation='leaky_relu', strides=1))
+    model.add(Conv1D(40, kernel_size=6, activation='leaky_relu', strides=1))
+    # model.add(Dropout(0.1))
+    model.add(Conv1D(50, kernel_size=5, activation='leaky_relu', strides=1))
+    # model.add(Dropout(0.2))
+    model.add(Conv1D(50, kernel_size=5, activation='leaky_relu', strides=1))
+    # model.add(Dropout(0.4))
     model.add(Flatten())
-    model.add(Dense(1024, activation='relu'))
-    model.add(Dropout(0.5))
+    model.add(Dense(1024, activation='leaky_relu'))
+    # model.add(Dropout(0.5))
     # additional fully connected layer
-    model.add(Dense(1024, activation='relu'))
-    model.add(Dropout(0.5))
+    # model.add(Dense(1024, activation='leaky_relu'))
+    # model.add(Dropout(0.5))
     # number_of_devices
     model.add(Dense(number_devices, activation='sigmoid'))
     return model
