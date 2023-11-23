@@ -28,8 +28,8 @@ def start_task():
                      task_name=f'Experiment Test Binary All Devices ('
                                f'resampling rate= 4s,'
                                f' activation_function=leaky_relu,'
-                               f' learning_rate=0.0001'  # ,'
-                               # f' w\\ Dropout,'
+                               f' learning_rate=0.0001,'
+                               ' w\\ Dropout,'
                                # f' additional layer'
                                f')')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
