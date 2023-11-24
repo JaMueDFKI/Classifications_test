@@ -1,9 +1,11 @@
 import glob
 import os
 
+import keras.metrics
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+import keras.backend as K
 from keras.layers import Dropout
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv1D, Flatten, Dense
@@ -57,14 +59,14 @@ def create_binary_model():
     model.add(Conv1D(30, kernel_size=10, activation="leaky_relu", strides=1, input_shape=(WINDOW_SIZE, 1)))
     model.add(Conv1D(30, kernel_size=8, activation="leaky_relu", strides=1))
     model.add(Conv1D(40, kernel_size=6, activation="leaky_relu", strides=1))
-    # model.add(Dropout(0.1))
+    model.add(Dropout(0.1))
     model.add(Conv1D(50, kernel_size=5, activation="leaky_relu", strides=1))
-    # model.add(Dropout(0.2))
+    model.add(Dropout(0.2))
     model.add(Conv1D(50, kernel_size=5, activation="leaky_relu", strides=1))
-    # model.add(Dropout(0.4))
+    model.add(Dropout(0.4))
     model.add(Flatten())
     model.add(Dense(1024, activation='leaky_relu'))
-    # model.add(Dropout(0.5))
+    model.add(Dropout(0.5))
     # additional fully connected layer
     # model.add(Dense(1024, activation='relu'))
     # model.add(Dropout(0.5))
@@ -136,6 +138,27 @@ def create_dataset(dataset_X, dataset_Y, window_size=WINDOW_SIZE):
     dataY = np.array(dataset_Y.iloc[gap:-gap])
     dataY[dataY > 10] = 1
     return dataX, dataY, index
+
+
+def f1_score(y_true, y_pred):
+
+    def recall_m(y_true, y_pred):
+        TP = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+        Positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+
+        recall = TP / (Positives+K.epsilon())
+        return recall
+
+    def precision_m(y_true, y_pred):
+        TP = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+        Pred_Positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+
+        precision = TP / (Pred_Positives+K.epsilon())
+        return precision
+
+    precision, recall = precision_m(y_true, y_pred), recall_m(y_true, y_pred)
+
+    return 2*((precision*recall)/(precision+recall+K.epsilon()))
 
 
 if __name__ == '__main__':

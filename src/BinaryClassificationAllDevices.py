@@ -5,7 +5,7 @@ import clearml
 import pandas as pd
 from clearml import Dataset, Task
 import tensorflow as tf
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, EarlyStopping
 from keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.metrics import Recall, Precision
@@ -13,7 +13,7 @@ from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.callbacks import CSVLogger
 from tensorflow.python.keras.layers import Dense
 
-from ClassificationUtils import load_csv_from_folder, create_dataset, create_binary_model, load_label_data
+from ClassificationUtils import load_csv_from_folder, create_dataset, create_binary_model, load_label_data, f1_score
 
 from tensorflow_addons.metrics import F1Score
 
@@ -28,8 +28,8 @@ def start_task():
                      task_name=f'Experiment Test Binary All Devices ('
                                f'resampling rate= 4s,'
                                f' activation_function=leaky_relu,'
-                               f' learning_rate=0.0001,'
-                               ' w\\ Dropout,'
+                               # f' learning_rate=0.0001,'
+                               f' w\\ Dropout,'
                                # f' additional layer'
                                f')')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
@@ -96,12 +96,13 @@ def start_task():
 
         model = create_binary_model()
 
-        adam_opt = Adam(learning_rate=0.0001)
+        adam_opt = Adam() #  learning_rate=0.0001)
 
         model.compile(loss="binary_crossentropy", optimizer=adam_opt,
                       metrics=["accuracy",
                                Recall(name="recall"),
-                               Precision(name="precision")])
+                               Precision(name="precision"),
+                               f1_score])
 
         model.load_weights(models_path + "/BinaryClassificationAllDevices/model_" + device + ".h5")
 
@@ -112,11 +113,12 @@ def start_task():
 
         tensorboard_callback = TensorBoard(log_dir=logdir + "/" + device)
         csv_callback = CSVLogger(logdir + "/results_" + device + ".csv")
+        early_stopping_callback = EarlyStopping(monitor='val_f1_score', patience=10, mode='max', start_from_epoch=10)
 
         print("Start training " + device)
 
         training_results = model.fit(x=dataX, y=dataY, epochs=50, validation_data=(val_dataX, val_dataY),
-                                     callbacks=[tensorboard_callback, csv_callback])
+                                     callbacks=[tensorboard_callback, csv_callback, early_stopping_callback])
         # print(training_results)
 
         # test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
