@@ -108,6 +108,8 @@ def start_task():
 
         device_pointer += 1
     f1_weigths = np.array(f1_weigths)
+    print(f1_weigths)
+    print(devices)
 
     metrics.append(WeightedF1Score(name="weighted_f1_score", num_classes=len(devices), weights=f1_weigths))
 
