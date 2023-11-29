@@ -171,8 +171,10 @@ class F1Score(keras.metrics.base_metric.Metric):
         self.f1_score = 0.0
 
     def update_state(self, y_true, y_pred, sample_weight=None):
-        recall = self.recall.update_state(y_true, y_pred, sample_weight)
-        precision = self.precision.update_state(y_true, y_pred, sample_weight)
+        self.recall.update_state(y_true, y_pred, sample_weight)
+        self.precision.update_state(y_true, y_pred, sample_weight)
+        recall = self.recall.result()
+        precision = self.precision.result()
         self.f1_score = 2*((precision*recall)/(precision+recall+K.epsilon()))
 
     def result(self) -> float:
