@@ -170,9 +170,9 @@ class F1Score(keras.metrics.base_metric.Metric):
         self.precision = Precision(class_id=class_id, **kwargs)
         self.f1_score = 0.0
 
-    def update_state(self, y_true, y_pred):
-        recall = self.recall.update_state(y_true, y_pred)
-        precision = self.precision.update_state(y_true, y_pred)
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        recall = self.recall.update_state(y_true, y_pred, sample_weight)
+        precision = self.precision.update_state(y_true, y_pred, sample_weight)
         self.f1_score = 2*((precision*recall)/(precision+recall+K.epsilon()))
 
     def result(self) -> float:
@@ -189,10 +189,10 @@ class WeightedF1Score(keras.metrics.base_metric.Metric):
         self.f1_scores = [F1Score(name=name, class_id=i, **kwargs) for i in range(num_classes)]
         self.weighted_f1_score = 0.0
 
-    def update_state(self, y_true, y_pred):
+    def update_state(self, y_true, y_pred, sample_weight=None):
         result = 0
         for i in range(len(self.class_weights)):
-            self.f1_scores[i].update_state(y_true, y_pred)
+            self.f1_scores[i].update_state(y_true, y_pred, sample_weight)
             result += self.class_weights[i] * self.f1_scores[i].result()
         self.weighted_f1_score = result
 
