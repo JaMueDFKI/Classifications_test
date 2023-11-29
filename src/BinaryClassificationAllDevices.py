@@ -13,7 +13,7 @@ from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.callbacks import CSVLogger
 from tensorflow.python.keras.layers import Dense
 
-from ClassificationUtils import load_csv_from_folder, create_dataset, create_binary_model, load_label_data, f1_score
+from ClassificationUtils import load_csv_from_folder, create_dataset, create_binary_model, load_label_data, f1_score_binary
 
 from tensorflow_addons.metrics import F1Score
 
@@ -102,7 +102,7 @@ def start_task():
                       metrics=["accuracy",
                                Recall(name="recall"),
                                Precision(name="precision"),
-                               f1_score])
+                               f1_score_binary])
 
         model.load_weights(models_path + "/BinaryClassificationAllDevices/model_" + device + ".h5")
 
@@ -113,7 +113,7 @@ def start_task():
 
         tensorboard_callback = TensorBoard(log_dir=logdir + "/" + device)
         csv_callback = CSVLogger(logdir + "/results_" + device + ".csv")
-        early_stopping_callback = EarlyStopping(monitor='val_f1_score', patience=10, mode='max')
+        early_stopping_callback = EarlyStopping(monitor='val_f1_score_binary', patience=10, mode='max')
 
         print("Start training " + device)
 

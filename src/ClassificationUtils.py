@@ -1,12 +1,13 @@
 import glob
 import os
 
-import keras.metrics
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+import keras.metrics.base_metric
 import keras.backend as K
 from keras.layers import Dropout
+from keras.metrics import Recall, Precision
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv1D, Flatten, Dense
 from numpy.lib.stride_tricks import sliding_window_view
@@ -140,16 +141,16 @@ def create_dataset(dataset_X, dataset_Y, window_size=WINDOW_SIZE):
     return dataX, dataY, index
 
 
-def f1_score(y_true, y_pred):
+def f1_score_binary(y_true, y_pred) -> float:
 
-    def recall_m(y_true, y_pred):
+    def recall_m(y_true, y_pred) -> float:
         TP = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
         Positives = K.sum(K.round(K.clip(y_true, 0, 1)))
 
         recall = TP / (Positives+K.epsilon())
         return recall
 
-    def precision_m(y_true, y_pred):
+    def precision_m(y_true, y_pred) -> float:
         TP = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
         Pred_Positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
 
@@ -159,6 +160,44 @@ def f1_score(y_true, y_pred):
     precision, recall = precision_m(y_true, y_pred), recall_m(y_true, y_pred)
 
     return 2*((precision*recall)/(precision+recall+K.epsilon()))
+
+
+class F1Score(keras.metrics.base_metric.Metric):
+
+    def __init__(self, name, **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.recall = Recall(**kwargs)
+        self.precision = Precision(**kwargs)
+        self.f1_score = 0.0
+
+    def update_state(self, y_true, y_pred):
+        recall = self.recall.update_state(y_true, y_pred)
+        precision = self.precision.update_state(y_true, y_pred)
+        self.f1_score = 2*((precision*recall)/(precision+recall+K.epsilon()))
+
+    def result(self) -> float:
+        return self.f1_score
+
+
+class WeightedF1Score(keras.metrics.base_metric.Metric):
+
+    def __init__(self, name: str, num_classes: int, weights: np.ndarray, **kwargs):
+        super().__init__(name=name, **kwargs)
+        if num_classes != len(weights):
+            raise ValueError("The number of classes must be equal to the number of weights")
+        self.weights = weights
+        self.f1_scores = [F1Score(name=name, class_id=i, **kwargs) for i in range(num_classes)]
+        self.weighted_f1_score = 0.0
+
+    def update_state(self, y_true, y_pred):
+        result = 0
+        for i in range(len(self.weights)):
+            self.f1_scores[i].update_state(y_true, y_pred)
+            result += self.weights[i] * self.f1_scores[i].result()
+        self.weighted_f1_score = result
+
+    def result(self) -> float:
+        return self.weighted_f1_score
 
 
 if __name__ == '__main__':

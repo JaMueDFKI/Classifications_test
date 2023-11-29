@@ -2,17 +2,19 @@ import os
 from datetime import datetime
 
 import clearml
+import numpy as np
 import pandas as pd
 from clearml import Dataset, Task
 import tensorflow as tf
 from keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, EarlyStopping
 from tensorflow.keras.metrics import Recall, Precision
 from tensorflow.python.keras.callbacks import CSVLogger
-from tensorflow_addons.metrics import F1Score
+# from tensorflow_addons.metrics import F1Score
 
-from ClassificationUtils import load_csv_from_folder, create_dataset, load_label_data, create_multilabeling_model
+from ClassificationUtils import load_csv_from_folder, create_dataset, load_label_data, create_multilabeling_model, \
+    F1Score, WeightedF1Score
 
 from ClearMLProjectModelInit import init_multilabeling
 from DataUtils import get_all_devices_file, get_all_devices_data
@@ -25,9 +27,10 @@ def start_task():
                      task_name=f'Experiment Test MultiLabeling ('
                                f'resampling rate= 4s,'
                                f' activation_function=leaky_relu,'
-                               f' learning_rate=0.00001'
+                               f' learning_rate=0.00001,'
                                # f' w\\ Dropout'
                                # f' additional layer'
+                               f'weighted_f1_score'
                                f')')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
@@ -89,12 +92,24 @@ def start_task():
 
     model = create_multilabeling_model(len(devices))
 
+
     device_pointer = 0
     metrics = []
+    f1_weigths = []
     for device in devices:
         metrics.append(Recall(name="recall_" + device, class_id=device_pointer))
         metrics.append(Precision(name="precision_" + device, class_id=device_pointer))
+        metrics.append(F1Score(name="f1_score_" + device, class_id=device_pointer))
+
+        match device:
+            case "kettle", "coffee machine": f1_weigths.append(0.2)
+            case "computer", "microwave": f1_weigths.append(0.3)
+            case "vacuum cleaner": f1_weigths.append(0)
+
         device_pointer += 1
+    f1_weigths = np.array(f1_weigths)
+
+    metrics.append(WeightedF1Score(name="weighted_f1_score", num_classes=len(devices), weights=f1_weigths))
 
     adam_opt = Adam(learning_rate=0.00001)
 
@@ -109,11 +124,12 @@ def start_task():
 
     tensorboard_callback = TensorBoard(log_dir=logdir)
     csv_callback = CSVLogger(logdir + "/results.csv")
+    early_stopping_callback = EarlyStopping(monitor='val_weighted_f1_score', patience=10, mode='max')
 
     print("Start training ")
 
     training_results = model.fit(x=dataX, y=dataY, epochs=50, validation_data=(val_dataX, val_dataY),
-                                 callbacks=[tensorboard_callback, csv_callback])
+                                 callbacks=[tensorboard_callback, csv_callback, early_stopping_callback])
     print(training_results)
 
     # test_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week2"
