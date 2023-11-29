@@ -184,16 +184,16 @@ class WeightedF1Score(keras.metrics.base_metric.Metric):
     def __init__(self, name: str, num_classes: int, weights: np.ndarray, **kwargs):
         super().__init__(name=name, **kwargs)
         if num_classes != len(weights):
-            raise ValueError("The number of classes must be equal to the number of weights")
-        self.weights = weights
+            raise ValueError("The number of classes must be equal to the number of class_weights")
+        self.class_weights = weights
         self.f1_scores = [F1Score(name=name, class_id=i, **kwargs) for i in range(num_classes)]
         self.weighted_f1_score = 0.0
 
     def update_state(self, y_true, y_pred):
         result = 0
-        for i in range(len(self.weights)):
+        for i in range(len(self.class_weights)):
             self.f1_scores[i].update_state(y_true, y_pred)
-            result += self.weights[i] * self.f1_scores[i].result()
+            result += self.class_weights[i] * self.f1_scores[i].result()
         self.weighted_f1_score = result
 
     def result(self) -> float:
