@@ -164,10 +164,10 @@ def f1_score_binary(y_true, y_pred) -> float:
 
 class F1Score(keras.metrics.base_metric.Metric):
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name, class_id: int = None, **kwargs):
         super().__init__(name=name, **kwargs)
-        self.recall = Recall(**kwargs)
-        self.precision = Precision(**kwargs)
+        self.recall = Recall(class_id=class_id, **kwargs)
+        self.precision = Precision(class_id=class_id, **kwargs)
         self.f1_score = 0.0
 
     def update_state(self, y_true, y_pred):
