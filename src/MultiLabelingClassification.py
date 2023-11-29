@@ -106,6 +106,7 @@ def start_task():
             case "computer", "microwave": f1_weigths.append(0.3)
             case "vacuum cleaner": f1_weigths.append(0)
 
+        print(device, f1_weigths)
         device_pointer += 1
     f1_weigths = np.array(f1_weigths)
     print(f1_weigths)
