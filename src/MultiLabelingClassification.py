@@ -102,12 +102,12 @@ def start_task():
         metrics.append(F1Score(name="f1_score_" + device, class_id=device_pointer))
 
         match device:
-            case "kettle", "coffee machine": f1_weigths.append(0.2)
-            case "computer", "microwave": f1_weigths.append(0.3)
+            case "kettle"| "coffee machine": f1_weigths.append(0.2)
+            case "computer"| "microwave": f1_weigths.append(0.3)
             case "vacuum cleaner": f1_weigths.append(0)
 
-        print(device, f1_weigths)
         device_pointer += 1
+
     f1_weigths = np.array(f1_weigths)
     print(f1_weigths)
     print(devices)
