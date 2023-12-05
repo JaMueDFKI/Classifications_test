@@ -4,12 +4,12 @@ import os
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-import keras.metrics.base_metric
+import keras.metrics
 import keras.backend as K
+from keras import Sequential
 from keras.layers import Dropout
 from keras.metrics import Recall, Precision
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Conv1D, Flatten, Dense
+from keras.src.layers import Conv1D, Flatten, Dense
 from numpy.lib.stride_tricks import sliding_window_view
 
 WINDOW_SIZE = 99
@@ -108,14 +108,14 @@ def create_multilabeling_model(number_devices: int):
     model.add(Conv1D(30, kernel_size=10, activation='leaky_relu', strides=1, input_shape=(WINDOW_SIZE, 1)))
     model.add(Conv1D(30, kernel_size=8, activation='leaky_relu', strides=1))
     model.add(Conv1D(40, kernel_size=6, activation='leaky_relu', strides=1))
-    # model.add(Dropout(0.1))
+    model.add(Dropout(0.1))
     model.add(Conv1D(50, kernel_size=5, activation='leaky_relu', strides=1))
-    # model.add(Dropout(0.2))
+    model.add(Dropout(0.2))
     model.add(Conv1D(50, kernel_size=5, activation='leaky_relu', strides=1))
-    # model.add(Dropout(0.4))
+    model.add(Dropout(0.4))
     model.add(Flatten())
     model.add(Dense(1024, activation='leaky_relu'))
-    # model.add(Dropout(0.5))
+    model.add(Dropout(0.5))
     # additional fully connected layer
     # model.add(Dense(1024, activation='leaky_relu'))
     # model.add(Dropout(0.5))
@@ -162,7 +162,7 @@ def f1_score_binary(y_true, y_pred) -> float:
     return 2*((precision*recall)/(precision+recall+K.epsilon()))
 
 
-class F1Score(keras.metrics.base_metric.Metric):
+class F1Score(keras.metrics.Metric):
 
     def __init__(self, name, class_id: int = None, **kwargs):
         super().__init__(name=name, **kwargs)
@@ -181,7 +181,7 @@ class F1Score(keras.metrics.base_metric.Metric):
         return self.f1_score
 
 
-class WeightedF1Score(keras.metrics.base_metric.Metric):
+class WeightedF1Score(keras.metrics.Metric):
 
     def __init__(self, name: str, num_classes: int, weights: np.ndarray, **kwargs):
         super().__init__(name=name, **kwargs)

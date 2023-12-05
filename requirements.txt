@@ -1,4 +1,4 @@
-numpy~=1.25.2
-pandas~=2.1.0
-clearml~=1.12.2
-tensorflow~=2.9.3
+numpy>=1.25.2
+pandas>=2.1.0
+clearml>=1.12.2
+tensorflow>=2.9.3

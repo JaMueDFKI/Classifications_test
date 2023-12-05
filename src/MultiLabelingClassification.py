@@ -7,14 +7,12 @@ import pandas as pd
 from clearml import Dataset, Task
 import tensorflow as tf
 from keras.optimizers import Adam
+from keras.src.callbacks import CSVLogger
+from keras.src.metrics import Recall, Precision, F1Score
 from sklearn.preprocessing import MinMaxScaler
 from keras.callbacks import TensorBoard, EarlyStopping
-from tensorflow.keras.metrics import Recall, Precision
-from tensorflow.python.keras.callbacks import CSVLogger
-# from tensorflow_addons.metrics import F1Score
 
-from ClassificationUtils import load_csv_from_folder, create_dataset, load_label_data, create_multilabeling_model, \
-    F1Score, WeightedF1Score
+from ClassificationUtils import load_csv_from_folder, create_dataset, load_label_data, create_multilabeling_model, WeightedF1Score
 
 from ClearMLProjectModelInit import init_multilabeling
 from DataUtils import get_all_devices_file, get_all_devices_data
@@ -28,9 +26,9 @@ def start_task():
                                f'resampling rate= 4s,'
                                f' activation_function=leaky_relu,'
                                f' learning_rate=0.00001,'
-                               # f' w\\ Dropout'
+                               f' w\\ Dropout'
                                # f' additional layer'
-                               f'weighted_f1_score'
+                               # f'weighted_f1_score'
                                f')')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
@@ -66,17 +64,7 @@ def start_task():
             dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/Active_phases/Week" + str(week_counter))
         week_counter += 1
 
-    # dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week0"
-    # dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week0"
-
-    min_max_scaler = MinMaxScaler()
-
     dataX, dataY, index = get_multilabeling_dataset(data_X_folders, data_Y_folders, devices)
-
-    # val_dataX_folder = dataset_path_databases + "/TimeDataWeeks/TimeSeriesData/Week1"
-    # val_dataY_folder = dataset_path_databases + "/TimeDataWeeks/Active_phases/Week1"
-
-    # val_dataX, val_dataY, val_index = get_multilabeling_dataset([val_dataX_folder], [val_dataY_folder], devices)
 
     val_data_X_folders = []
     val_data_Y_folders = []
@@ -92,27 +80,27 @@ def start_task():
 
     model = create_multilabeling_model(len(devices))
 
-
     device_pointer = 0
     metrics = []
-    f1_weigths = []
+    # f1_weigths = []
     for device in devices:
         metrics.append(Recall(name="recall_" + device, class_id=device_pointer))
         metrics.append(Precision(name="precision_" + device, class_id=device_pointer))
         metrics.append(F1Score(name="f1_score_" + device, class_id=device_pointer))
 
-        match device:
-            case "kettle"| "coffee machine": f1_weigths.append(0.2)
-            case "computer"| "microwave": f1_weigths.append(0.3)
-            case "vacuum cleaner": f1_weigths.append(0)
-
+        # match device:
+        #     case "kettle" | "coffee machine": f1_weigths.append(0.2)
+        #     case "computer" | "microwave": f1_weigths.append(0.3)
+        #     case "vacuum cleaner": f1_weigths.append(0)
         device_pointer += 1
 
-    f1_weigths = np.array(f1_weigths)
-    print(f1_weigths)
-    print(devices)
+    # f1_weigths = np.array(f1_weigths)
+    # print(f1_weigths)
+    # print(devices)
 
-    metrics.append(WeightedF1Score(name="weighted_f1_score", num_classes=len(devices), weights=f1_weigths))
+    # metrics.append(WeightedF1Score(name="weighted_f1_score", num_classes=len(devices), weights=f1_weigths))
+
+    metrics.append(F1Score())
 
     adam_opt = Adam(learning_rate=0.00001)
 
@@ -127,7 +115,7 @@ def start_task():
 
     tensorboard_callback = TensorBoard(log_dir=logdir)
     csv_callback = CSVLogger(logdir + "/results.csv")
-    early_stopping_callback = EarlyStopping(monitor='val_weighted_f1_score', patience=10, mode='max')
+    early_stopping_callback = EarlyStopping(monitor='val_f1_score', patience=10, mode='max')
 
     print("Start training ")
 
