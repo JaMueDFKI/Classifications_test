@@ -30,7 +30,7 @@ def start_task():
                                # f' additional layer'
                                # f'weighted_f1_score'
                                f')')
-    task.execute_remotely(queue_name='default', clone=False, exit_process=True)
+    # task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
     # get local copy of DataBases
     dataset_databases = Dataset.get(dataset_project='MultiLabeling_Classification_Test', dataset_name='DataBases')
@@ -51,6 +51,7 @@ def start_task():
     )
 
     devices = get_all_devices_data(dataset_path_databases + "/TimeDataWeeksOnlyUsedDevices/TimeSeriesData")
+    devices.remove('vacuum cleaner')
     time_test_started = datetime.now().strftime("%Y%m%d-%H%M%S")
 
     week_counter = 0
@@ -86,7 +87,7 @@ def start_task():
     for device in devices:
         metrics.append(Recall(name="recall_" + device, class_id=device_pointer))
         metrics.append(Precision(name="precision_" + device, class_id=device_pointer))
-        metrics.append(F1Score(name="f1_score_" + device, class_id=device_pointer))
+        # metrics.append(F1Score(name="f1_score_" + device, class_id=device_pointer))
 
         # match device:
         #     case "kettle" | "coffee machine": f1_weigths.append(0.2)
@@ -244,5 +245,5 @@ def get_multilabeling_dataset(data_x_folders: list[str], data_y_folders: list[st
 
 if __name__ == '__main__':
     # init_test()
-    start_task()
-    # get_datasets_from_remote()
+    # start_task()
+    get_datasets_from_remote()
