@@ -56,7 +56,6 @@ def init_binary_all_devices(folder: str, data_filepath: str):
 def init_multiclassing(filepath: str):
     devices = get_all_devices_file(os.path.dirname(os.path.abspath(os.path.curdir))
                                    + "/Resources/TimeDataWeeks/TimeSeriesData/Week0/2022-12-05.csv")
-    devices.remove('vacuum cleaner')
     model = create_multiclassing_model(len(devices))
     model.save_weights(filepath)
 
@@ -69,6 +68,7 @@ def init_multiclassing(filepath: str):
 
 def init_multilabeling(filepath: str, data_filepath: str):
     devices = get_all_devices_data(data_filepath)
+    devices.remove('vacuum cleaner')
     model = create_multilabeling_model(len(devices))
     model.save_weights(filepath)
 
