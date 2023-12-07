@@ -12,7 +12,8 @@ from keras.src.metrics import Recall, Precision, F1Score
 from sklearn.preprocessing import MinMaxScaler
 from keras.callbacks import TensorBoard, EarlyStopping
 
-from ClassificationUtils import load_csv_from_folder, create_dataset, load_label_data, create_multilabeling_model, WeightedF1Score
+from ClassificationUtils import load_csv_from_folder, create_dataset, load_label_data, create_multilabeling_model, \
+    WeightedF1Score, F1ScoreClass
 
 from ClearMLProjectModelInit import init_multilabeling
 from DataUtils import get_all_devices_file, get_all_devices_data
@@ -87,7 +88,7 @@ def start_task():
     for device in devices:
         metrics.append(Recall(name="recall_" + device, class_id=device_pointer))
         metrics.append(Precision(name="precision_" + device, class_id=device_pointer))
-        # metrics.append(F1Score(name="f1_score_" + device, class_id=device_pointer))
+        metrics.append(F1ScoreClass(name="f1_score_" + device, class_id=device_pointer))
 
         # match device:
         #     case "kettle" | "coffee machine": f1_weigths.append(0.2)
@@ -101,7 +102,7 @@ def start_task():
 
     # metrics.append(WeightedF1Score(name="weighted_f1_score", num_classes=len(devices), weights=f1_weigths))
 
-    metrics.append(F1Score())
+    # metrics.append(F1Score())
     metrics.append(F1Score(average="macro", name="averaged_f1_score"))
 
     adam_opt = Adam(learning_rate=0.00001)

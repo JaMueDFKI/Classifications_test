@@ -10,6 +10,7 @@ from keras import Sequential
 from keras.layers import Dropout
 from keras.metrics import Recall, Precision
 from keras.src.layers import Conv1D, Flatten, Dense
+from keras.src.metrics import F1Score
 from numpy.lib.stride_tricks import sliding_window_view
 
 WINDOW_SIZE = 99
@@ -141,44 +142,18 @@ def create_dataset(dataset_X, dataset_Y, window_size=WINDOW_SIZE):
     return dataX, dataY, index
 
 
-def f1_score_binary(y_true, y_pred) -> float:
+class F1ScoreClass(keras.metrics.Metric):
 
-    def recall_m(y_true, y_pred) -> float:
-        TP = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-        Positives = K.sum(K.round(K.clip(y_true, 0, 1)))
-
-        recall = TP / (Positives+K.epsilon())
-        return recall
-
-    def precision_m(y_true, y_pred) -> float:
-        TP = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-        Pred_Positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
-
-        precision = TP / (Pred_Positives+K.epsilon())
-        return precision
-
-    precision, recall = precision_m(y_true, y_pred), recall_m(y_true, y_pred)
-
-    return 2*((precision*recall)/(precision+recall+K.epsilon()))
-
-
-class F1Score(keras.metrics.Metric):
-
-    def __init__(self, name, class_id: int = None, **kwargs):
+    def __init__(self, name: str, class_id: int, **kwargs):
         super().__init__(name=name, **kwargs)
-        self.recall = Recall(class_id=class_id, **kwargs)
-        self.precision = Precision(class_id=class_id, **kwargs)
-        self.f1_score = 0.0
+        self.class_id = class_id
+        self.f1_score = F1Score()
 
     def update_state(self, y_true, y_pred, sample_weight=None):
-        self.recall.update_state(y_true, y_pred, sample_weight)
-        self.precision.update_state(y_true, y_pred, sample_weight)
-        recall = self.recall.result()
-        precision = self.precision.result()
-        self.f1_score = 2*((precision*recall)/(precision+recall+K.epsilon()))
+        self.f1_score.update_state(y_true, y_pred, sample_weight)
 
-    def result(self) -> float:
-        return self.f1_score
+    def result(self):
+        return self.f1_score.result()[self.class_id]
 
 
 class WeightedF1Score(keras.metrics.Metric):
@@ -188,13 +163,13 @@ class WeightedF1Score(keras.metrics.Metric):
         if num_classes != len(weights):
             raise ValueError("The number of classes must be equal to the number of class_weights")
         self.class_weights = weights
-        self.f1_scores = [F1Score(name=name, class_id=i, **kwargs) for i in range(num_classes)]
+        self.f1_scores = F1Score(name=name, **kwargs)
         self.weighted_f1_score = 0.0
 
     def update_state(self, y_true, y_pred, sample_weight=None):
         result = 0
         for i in range(len(self.class_weights)):
-            self.f1_scores[i].update_state(y_true, y_pred, sample_weight)
+            self.f1_scores.update_state(y_true, y_pred, sample_weight)
             result += self.class_weights[i] * self.f1_scores[i].result()
         self.weighted_f1_score = result
 
