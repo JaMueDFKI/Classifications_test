@@ -102,6 +102,7 @@ def start_task():
     # metrics.append(WeightedF1Score(name="weighted_f1_score", num_classes=len(devices), weights=f1_weigths))
 
     metrics.append(F1Score())
+    metrics.append(F1Score(average="macro", name="averaged_f1_score"))
 
     adam_opt = Adam(learning_rate=0.00001)
 
@@ -116,7 +117,7 @@ def start_task():
 
     tensorboard_callback = TensorBoard(log_dir=logdir)
     csv_callback = CSVLogger(logdir + "/results.csv")
-    early_stopping_callback = EarlyStopping(monitor='val_f1_score', patience=10, mode='max')
+    early_stopping_callback = EarlyStopping(monitor='val_averaged_f1_score', patience=10, mode='max')
 
     print("Start training ")
 
