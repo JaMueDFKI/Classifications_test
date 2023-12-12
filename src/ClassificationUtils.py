@@ -155,6 +155,9 @@ class F1ScoreClass(keras.metrics.Metric):
     def result(self):
         return self.f1_score.result()[self.class_id]
 
+    def reset_state(self):
+        self.f1_score.reset_state()
+
 
 class WeightedF1Score(keras.metrics.Metric):
 
