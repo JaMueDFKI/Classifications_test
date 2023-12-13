@@ -118,7 +118,10 @@ def start_task():
 
     tensorboard_callback = TensorBoard(log_dir=logdir)
     csv_callback = CSVLogger(logdir + "/results.csv")
-    early_stopping_callback = EarlyStopping(monitor='val_averaged_f1_score', patience=10, mode='max')
+    early_stopping_callback = EarlyStopping(monitor='val_averaged_f1_score',
+                                            patience=10,
+                                            mode='max',
+                                            start_from_epoch=10)
 
     print("Start training ")
 
