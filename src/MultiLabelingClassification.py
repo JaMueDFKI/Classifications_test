@@ -27,9 +27,8 @@ def start_task():
                                f'resampling rate= 4s,'
                                f' activation_function=leaky_relu,'
                                f' learning_rate=0.00001,'
-                               f' w\\ Dropout'
-                               # f' additional layer'
-                               # f'weighted_f1_score'
+                               # f' w\\ Dropout'
+                               f' additional layer'
                                f')')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
