@@ -9,6 +9,7 @@ import tensorflow as tf
 from keras.optimizers import Adam
 from keras.src.callbacks import CSVLogger
 from keras.src.metrics import Recall, Precision, F1Score
+from keras.src.optimizers.schedules import ExponentialDecay
 from sklearn.preprocessing import MinMaxScaler
 from keras.callbacks import TensorBoard, EarlyStopping
 
@@ -26,9 +27,10 @@ def start_task():
                      task_name=f'Experiment Test MultiLabeling ('
                                f'resampling rate= 4s,'
                                f' activation_function=leaky_relu,'
-                               f' learning_rate=0.00001,'
+                               # f' learning_rate=0.00001,'
+                               f'exponential lr scheduler,(0.001, 61422, 0.9, True)'
                                # f' w\\ Dropout'
-                               f' additional layer'
+                               # f' additional layer'
                                f')')
     task.execute_remotely(queue_name='default', clone=False, exit_process=True)
 
@@ -104,7 +106,10 @@ def start_task():
     # metrics.append(F1Score())
     metrics.append(F1Score(average="macro", name="averaged_f1_score"))
 
-    adam_opt = Adam(learning_rate=0.00001)
+    adam_opt = Adam(learning_rate=ExponentialDecay(initial_learning_rate=0.001,
+                                                   decay_steps=61422,
+                                                   decay_rate=0.9,
+                                                   staircase=True))
 
     model.compile(loss="binary_crossentropy", optimizer=adam_opt, metrics=metrics)
 

@@ -118,7 +118,7 @@ def create_multilabeling_model(number_devices: int):
     model.add(Dense(1024, activation='leaky_relu'))
     # model.add(Dropout(0.5))
     # additional fully connected layer
-    model.add(Dense(1024, activation='leaky_relu'))
+    # model.add(Dense(1024, activation='leaky_relu'))
     # model.add(Dropout(0.5))
     # number_of_devices
     model.add(Dense(number_devices, activation='sigmoid'))
