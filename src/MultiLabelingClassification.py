@@ -29,7 +29,7 @@ def start_task():
                                f' activation_function=leaky_relu,'
                                # f' learning_rate=0.00001,'
                                # f'exponential lr scheduler(0.001, 61422, 0.9, True)'
-                               f'polynomial lr scheduler(0.001, 61422*40, 0.00001, 2, False)'
+                               f'polynomial lr scheduler(0.001, 61422*40, 0.00001, 1, False)'
                                # f' w\\ Dropout'
                                # f' additional layer'
                                f')')
@@ -110,7 +110,7 @@ def start_task():
     learning_rate = PolynomialDecay(initial_learning_rate=0.001,
                                     decay_steps=61422*40,
                                     end_learning_rate=0.00001,
-                                    power=2,
+                                    power=1,
                                     cycle=False)
 
     # learning_rate = ExponentialDecay(initial_learning_rate=0.001,
