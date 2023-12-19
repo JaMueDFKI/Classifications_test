@@ -115,7 +115,7 @@ def start_task():
 
     learning_rate = ExponentialDecay(initial_learning_rate=0.001,
                                      decay_steps=61422,
-                                     decay_rate=0.95,
+                                     decay_rate=0.99,
                                      staircase=True)
 
     adam_opt = Adam(learning_rate=learning_rate)
