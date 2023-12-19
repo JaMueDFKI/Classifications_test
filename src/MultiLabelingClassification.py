@@ -39,7 +39,7 @@ def start_task():
                        docker='nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04',
                        docker_args='-e CLEARML_AGENT_GIT_USER=oauth2 -e CLEARML_AGENT_GIT_PASS=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'
                        )
-    Task.enqueue(queue_name='default', task=task)
+    task.execute_remotely(queue_name='default')
 
     # get local copy of DataBases
     dataset_databases = Dataset.get(dataset_project='MultiLabeling_Classification_Test', dataset_name='DataBases')
