@@ -29,7 +29,7 @@ def start_task():
                                f'resampling rate= 4s,'
                                f' activation_function=leaky_relu,'
                                # f' learning_rate=0.00001,'
-                               f'exponential lr scheduler(0.001, 61422, 0.95, False)'
+                               f'exponential lr scheduler(0.001, 61422, 0.99, False)'
                                # f'polynomial lr scheduler(0.001, 61422*40, 0.00001, 1.5, False)'
                                # f' w\\ Dropout'
                                # f' additional layer'
@@ -121,7 +121,7 @@ def start_task():
 
     learning_rate = ExponentialDecay(initial_learning_rate=0.001,
                                      decay_steps=61422,
-                                     decay_rate=0.95,
+                                     decay_rate=0.99,
                                      staircase=False)
 
     adam_opt = Adam(learning_rate=learning_rate)
