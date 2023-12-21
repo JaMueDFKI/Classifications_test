@@ -23,7 +23,7 @@ RESAMPLING_RATE = "4s"
 
 
 def start_task():
-    git_token_file = open(os.path.abspath(os.path.curdir) + "/git_token", "r")
+    git_token_file = open(os.path.dirname(os.path.abspath(os.path.curdir)) + "/git_token", "r")
     git_token = git_token_file.readline()
     git_token_file.close()
     task = Task.create(project_name='MultiLabeling_Classification_Test',
@@ -42,8 +42,9 @@ def start_task():
                        docker='nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04',
                        docker_args='-e CLEARML_AGENT_GIT_USER=oauth2 -e CLEARML_AGENT_GIT_PASS=' + git_token
                      )
-    # task.execute_remotely(queue_name='default')
-    Task.enqueue(task=task, queue_name='default')
+    task.init()
+    task.execute_remotely(queue_name='default')
+    # Task.enqueue(task=task, queue_name='default')
 
     # get local copy of DataBases
     dataset_databases = Dataset.get(dataset_project='MultiLabeling_Classification_Test', dataset_name='DataBases')
