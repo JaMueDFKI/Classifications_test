@@ -7,9 +7,9 @@ import pandas as pd
 from clearml import Dataset, Task
 import tensorflow as tf
 from keras.optimizers import Adam
-from keras.src.callbacks import CSVLogger
-from keras.src.metrics import Recall, Precision, F1Score
-from keras.src.optimizers.schedules import ExponentialDecay, PolynomialDecay
+from keras.callbacks import CSVLogger
+from keras.metrics import Recall, Precision, F1Score
+from keras.optimizers.schedules import ExponentialDecay, PolynomialDecay
 from sklearn.preprocessing import MinMaxScaler
 from keras.callbacks import TensorBoard, EarlyStopping
 

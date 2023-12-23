@@ -9,8 +9,8 @@ import keras.backend as K
 from keras import Sequential
 from keras.layers import Dropout
 from keras.metrics import Recall, Precision
-from keras.src.layers import Conv1D, Flatten, Dense
-from keras.src.metrics import F1Score
+from keras.layers import Conv1D, Flatten, Dense
+from keras.metrics import F1Score
 from numpy.lib.stride_tricks import sliding_window_view
 
 WINDOW_SIZE = 99
