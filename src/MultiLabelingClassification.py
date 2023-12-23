@@ -23,28 +23,28 @@ RESAMPLING_RATE = "4s"
 
 
 def start_task():
-    git_token_file = open(os.path.dirname(os.path.abspath(os.path.curdir)) + "/git_token", "r")
-    git_token = git_token_file.readline()
-    git_token_file.close()
-    task = Task.create(project_name='MultiLabeling_Classification_Test',
-                     repo='https://github.com/JaMueDFKI/Classifications_test.git',
-                     task_name=f'Experiment Test MultiLabeling ('
-                               f'resampling rate= 4s,'
-                               f' activation_function=leaky_relu,'
-                               # f' learning_rate=0.00001,'
-                               f'exponential lr scheduler(0.001, 61422, 0.99, False)'
-                               # f'polynomial lr scheduler(0.001, 61422*40, 0.00001, 1.5, False)'
-                               # f' w\\ Dropout'
-                               # f' additional layer'
-                               f')',
-                       script='MultiLabelingClassification.py',
-                       add_task_init_call=True,
-                       docker='nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04',
-                       docker_args='-e CLEARML_AGENT_GIT_USER=oauth2 -e CLEARML_AGENT_GIT_PASS=' + git_token
-                     )
-    task.init()
-    task.execute_remotely(queue_name='default')
-    # Task.enqueue(task=task, queue_name='default')
+    # git_token_file = open(os.path.dirname(os.path.abspath(os.path.curdir)) + "/git_token", "r")
+    # git_token = git_token_file.readline()
+    # git_token_file.close()
+    # task = Task.create(project_name='MultiLabeling_Classification_Test',
+    #                  repo='https://github.com/JaMueDFKI/Classifications_test.git',
+    #                  task_name=f'Experiment Test MultiLabeling ('
+    #                            f'resampling rate= 4s,'
+    #                            f' activation_function=leaky_relu,'
+    #                            # f' learning_rate=0.00001,'
+    #                            f'exponential lr scheduler(0.001, 61422, 0.99, False)'
+    #                            # f'polynomial lr scheduler(0.001, 61422*40, 0.00001, 1.5, False)'
+    #                            # f' w\\ Dropout'
+    #                            # f' additional layer'
+    #                            f')',
+    #                    script='MultiLabelingClassification.py',
+    #                    add_task_init_call=True,
+    #                    docker='nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04',
+    #                    docker_args='-e CLEARML_AGENT_GIT_USER=oauth2 -e CLEARML_AGENT_GIT_PASS=' + git_token
+    #                  )
+    # task.init()
+    # # task.execute_remotely(queue_name='default')
+    # task.enqueue(task=task, queue_name='default')
 
     # get local copy of DataBases
     dataset_databases = Dataset.get(dataset_project='MultiLabeling_Classification_Test', dataset_name='DataBases')
